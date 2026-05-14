@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/home/app
+      - /home/app/node_modules
+    environment:
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=password
+      - DB_NAME=mydb
+      - REDIS_HOST=redis_cache
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres_db
+      - redis_cache
+    networks:
+      - bknd_network
+
+  # --- POSTGRES DATABASE ---
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bknd_network
+
+  # --- POSTGRES GRAPHICAL INTERFACE ---
+  pgadmin_ui:
+    image: dpage/pgadmin4:9.15 # Using the latest pgAdmin 4 image
+    container_name: pgadmin_ui
+    ports:
+      - "8080:80" # Access at http://localhost:8080
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com # Login Email
+      - PGADMIN_DEFAULT_PASSWORD=adminpassword # Login Password
+    depends_on:
+      - postgres_db
+    networks:
+      - bknd_network
+
+  # --- REDIS CACHE ---
+  redis_cache:
+    image: redis:7-alpine
+    container_name: redis_cache
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - bknd_network
+
+  # --- REDIS GRAPHICAL INTERFACE ---
+  redis_commander_ui:
+    image: rediscommander/redis-commander:latest
+    container_name: redis_commander_ui
+    ports:
+      - "8081:8081" # Access at http://localhost:8081
+    environment:
+      - REDIS_HOSTS=local:redis_cache:6379 # Tells it where to look for Redis
+    depends_on:
+      - redis_cache
+    networks:
+      - bknd_network
+
+networks:
+  bknd_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
