@@ -1,17 +1,16 @@
-version: "3.8"
-
 services:
-  app:
+  app1:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: backend
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - .:/home/app
       - /home/app/node_modules
     environment:
+      - NODE_ENV=development
+      - PORT=3000
       - DB_HOST=postgres_db
       - DB_PORT=5432
       - DB_USER=admin
@@ -19,6 +18,57 @@ services:
       - DB_NAME=mydb
       - REDIS_HOST=redis_cache
       - REDIS_PORT=6379
+      - INTANCE=server_1
+    depends_on:
+      - postgres_db
+      - redis_cache
+    networks:
+      - bknd_network
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3002:3000"
+    volumes:
+      - .:/home/app
+      - /home/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=password
+      - DB_NAME=mydb
+      - REDIS_HOST=redis_cache
+      - REDIS_PORT=6379
+      - INTANCE=server_2
+    depends_on:
+      - postgres_db
+      - redis_cache
+    networks:
+      - bknd_network
+  app3:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3003:3000"
+    volumes:
+      - .:/home/app
+      - /home/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=password
+      - DB_NAME=mydb
+      - REDIS_HOST=redis_cache
+      - REDIS_PORT=6379
+      - INTANCE=server_3
     depends_on:
       - postgres_db
       - redis_cache

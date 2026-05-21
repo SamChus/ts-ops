@@ -1,37 +1,29 @@
-import { pgPool, redisClient, getPgClient } from "./db";
+import { pgPool, redisClient, getPgClient } from "../config/db";
+import { User } from "../types";
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  balance: number;
-}
+
 
 export class UserService {
   // 1. FETCHING DATA (Cache-Aside Pattern)
-  static async getUserProfile(userId: number): Promise<User | null> {
-    const cacheKey = `user:profile:${userId}`;
-
-    // Step A: Check Redis Cache
-    const cachedUser = await redisClient.get(cacheKey);
-    if (cachedUser) {
-      console.log("📦 Redis Cache Hit!");
-      return JSON.parse(cachedUser);
+  static async getUserProfileByEmail(email: string): Promise<User | null> {
+    const cacheKey = `user:profile:${email}`;
+    // Attempt to retrieve from Redis cache first
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log("Cache hit for user profile:", email);
+      return JSON.parse(cachedData) as User;
     }
+    console.log("Cache miss for user profile:", email);
 
-    console.log("🔍 Redis Cache Miss. Querying PostgreSQL...");
-
-    // Step B: Query Postgres securely (Parameterized values guard against SQL Injection)
+    // If not in cache, query PostgreSQL
     const queryText =
-      "SELECT id, name, email, balance FROM users WHERE id = $1 LIMIT 1";
-    const result = await pgPool.query(queryText, [userId]);
-
+      "SELECT id, name, email, balance, password FROM users WHERE email = $1";
+    const result = await pgPool.query(queryText, [email]);
     if (result.rows.length === 0) return null;
-    const user: User = result.rows[0];
+    const user = result.rows[0] as User;
 
-    // Step C: Save to Redis Cache with a 5-minute Expiration TTL (300 seconds)
-    await redisClient.set(cacheKey, JSON.stringify(user), { EX: 300 });
-
+    // Store the retrieved user profile in Redis with an expiration time (e.g., 1 hour)
+    await redisClient.set(cacheKey, JSON.stringify(user), { EX: 3600 });
     return user;
   }
 
@@ -47,8 +39,22 @@ export class UserService {
       VALUES ($1, $2, $3, $4) 
       RETURNING id, name, email, balance
     `;
-    const result = await pgPool.query(queryText, [name, email, initialBalance, password]);
-    return result.rows[0];
+
+    try {
+      const result = await pgPool.query(queryText, [
+        name,
+        email,
+        initialBalance,
+        password,
+      ]);
+      return result.rows[0];
+    } catch (error) {
+      const pgError = error as { code?: string };
+      if (pgError.code === "23505") {
+        throw new Error("EMAIL_ALREADY_EXISTS");
+      }
+      throw error;
+    }
   }
 
   // 3. SECURE TRANSACTIONS (ACID compliant with safe rollback)
