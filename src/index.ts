@@ -5,7 +5,9 @@ import { initDatabase } from "./config/db";
 import cors from "cors";
 import dotenv from "dotenv";
 
+
 dotenv.config()
+
 
 
 
@@ -35,7 +37,7 @@ app.use("/auth", authRoute);
 const startServer = async () => {
   await initDatabase();
   app.listen(port, () => {
-    console.log(`This is ${instance}, listen in ${port}`);
+    console.log(`This is ${instance}, listen on ${port}`);
   });
 };
 

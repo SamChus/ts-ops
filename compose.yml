@@ -74,6 +74,22 @@ services:
       - redis_cache
     networks:
       - bknd_network
+  nginx_balancer:
+    image: nginx:alpine
+    container_name: nginx_balancer
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app1
+      - app2
+      - app3
+      - pgadmin_ui
+      - redis_commander_ui
+    networks:
+      - bknd_network
 
   # --- POSTGRES DATABASE ---
   postgres_db:
