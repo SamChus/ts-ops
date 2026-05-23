@@ -2,7 +2,7 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-  balance: number;
+  phone: string;
 }
 
 export interface LoginRequest {
@@ -15,5 +15,5 @@ export interface User {
   name: string;
   email: string;
   password: string;
-  balance: number;
+  phone: string;
 }

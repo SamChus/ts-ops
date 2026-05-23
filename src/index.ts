@@ -4,10 +4,10 @@ import authRoute from "./routes/auth";
 import { initDatabase } from "./config/db";
 import cors from "cors";
 import dotenv from "dotenv";
+import { verifySTMP } from "./validate/stmp";
 
 
 dotenv.config()
-
 
 
 
@@ -18,6 +18,9 @@ const app: Application = express();
 
 const instance = process.env.INTANCE;
 const port = process.env.PORT;
+
+
+
 
 
 
@@ -32,10 +35,15 @@ app.get("/", (req: Request, res: Response) => {
   );
 });
 
+app.get("/health", (req: Request, res: Response) => {
+  res.json({ status: "ok" });
+});
+
 app.use("/auth", authRoute);
 
 const startServer = async () => {
   await initDatabase();
+  await verifySTMP();
   app.listen(port, () => {
     console.log(`This is ${instance}, listen on ${port}`);
   });

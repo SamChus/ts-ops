@@ -34,7 +34,10 @@ export async function initDatabase() {
         name VARCHAR(100),
         email VARCHAR(150) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL, 
-        balance NUMERIC DEFAULT 0
+        phone VARCHAR(20),
+        isVerified BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
       );
     `;
         await pgPool.query(createTableQuery);

@@ -6,18 +6,22 @@ import { User } from "../types";
 export class UserService {
   // 1. FETCHING DATA (Cache-Aside Pattern)
   static async getUserProfileByEmail(email: string): Promise<User | null> {
+
     const cacheKey = `user:profile:${email}`;
+
     // Attempt to retrieve from Redis cache first
     const cachedData = await redisClient.get(cacheKey);
+
     if (cachedData) {
       console.log("Cache hit for user profile:", email);
       return JSON.parse(cachedData) as User;
     }
+
     console.log("Cache miss for user profile:", email);
 
     // If not in cache, query PostgreSQL
     const queryText =
-      "SELECT id, name, email, balance, password FROM users WHERE email = $1";
+      "SELECT id, name, email, phone, password, isVerified, created_at, updated_at FROM users WHERE email = $1";
     const result = await pgPool.query(queryText, [email]);
     if (result.rows.length === 0) return null;
     const user = result.rows[0] as User;
@@ -27,35 +31,7 @@ export class UserService {
     return user;
   }
 
-  // 2. SAVING DATA
-  static async createNewUser(
-    name: string,
-    email: string,
-    initialBalance: number,
-    password: string,
-  ): Promise<User> {
-    const queryText = `
-      INSERT INTO users (name, email, balance, password) 
-      VALUES ($1, $2, $3, $4) 
-      RETURNING id, name, email, balance
-    `;
 
-    try {
-      const result = await pgPool.query(queryText, [
-        name,
-        email,
-        initialBalance,
-        password,
-      ]);
-      return result.rows[0];
-    } catch (error) {
-      const pgError = error as { code?: string };
-      if (pgError.code === "23505") {
-        throw new Error("EMAIL_ALREADY_EXISTS");
-      }
-      throw error;
-    }
-  }
 
   // 3. SECURE TRANSACTIONS (ACID compliant with safe rollback)
   static async transferFunds(
