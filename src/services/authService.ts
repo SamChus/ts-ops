@@ -27,7 +27,7 @@ export class authService {
     if (!user) {
       throw new Error("USER_NOT_FOUND");
     }
-   
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -45,8 +45,6 @@ export class authService {
     password: string,
     phone: string,
   ): Promise<User> {
-
-
     const queryText = `
       INSERT INTO users (name, email, password, phone, isVerified) 
       VALUES ($1, $2, $3, $4, $5) 
@@ -96,11 +94,17 @@ export class authService {
       throw new Error("USER_NOT_FOUND");
     }
 
-    const isValidToken = verifyUserToken(token).userId === user.id;
-    if (!isValidToken) {
+    let decodedToken;
+    try {
+      decodedToken = verifyUserToken(token);
+    } catch (error) {
       throw new Error("INVALID_TOKEN");
     }
 
+    const isValidToken = decodedToken.userId === user.id;
+    if (!isValidToken) {
+      throw new Error("INVALID_TOKEN");
+    }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -113,35 +117,32 @@ export class authService {
   }
 
   static async sendToken(email: string): Promise<void> {
-      const user = await validateUser(email);
+    const user = await validateUser(email);
 
-      const token = crypto.randomInt(0, 1000000).toString().padStart(6, "0");
+    const token = crypto.randomInt(0, 1000000).toString().padStart(6, "0");
 
-      const userId = user.id;
+    const userId = user.id;
 
-      const redisKey = `auth_token:${userId}`;
+    const redisKey = `auth_token:${userId}`;
 
     await redisClient.set(redisKey, token, { EX: 300 });
 
-      sendEmail(
+    sendEmail(
       email,
       "Email Verification",
       "Your verification code is: " + token,
     );
-
   }
 
   static async verifyEmail(email: string, token: string): Promise<void> {
     const user = await validateUser(email);
 
+    const userId = user.id;
 
-  
-  const userId = user.id;
-
-  const redisKey = `auth_token:${userId}`;
+    const redisKey = `auth_token:${userId}`;
     const storedToken = await redisClient.get(redisKey);
 
-   if (!storedToken) {
+    if (!storedToken) {
       throw new Error("TOKEN_EXPIRED");
     }
 
