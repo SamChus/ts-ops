@@ -1,22 +1,39 @@
-import express = require("express");
-import type { Application, Request, Response } from "express-serve-static-core";
-import authRoute from "./routes/auth";
-import userRoute from "./routes/user";
-import { initDatabase, redisClient } from "./config/db";
-import cors from "cors";
 import dotenv from "dotenv";
-import { verifySTMP } from "./validate/stmp";
-import authMiddleware from "./middleware/auth";
-import rateLimit from "express-rate-limit";
-import RedisStore from "rate-limit-redis";
-
 dotenv.config();
 
-const app: Application = express();
-const instance = process.env.INTANCE;
-const port = process.env.PORT;
+import express = require("express");
+import type { Application, Request, Response } from "express-serve-static-core";
+import AppError from "./utils/appError";
+import { errorHandler } from "./middlewares/errorHandler";
 
-app.set("trust proxy", 1); // Placed early to ensure Express reads headers correctly
+import authRoute from "./routes/auth.routes";
+import userRoute from "./routes/user.routes";
+import uploadRoute from "./routes/upload.routes";
+import { initDatabase, redisClient } from "./config/db";
+import cors from "cors";
+import { verifySTMP } from "./validate/stmp";
+import authMiddleware from "./middlewares/auth";
+import rateLimit from "express-rate-limit";
+import RedisStore from "rate-limit-redis";
+import logger from "./utils/winston";
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught Exception:", error);
+  process.exit(1);
+});
+
+const app: Application = express();
+const instance = process.env.INSTANCE || "ts-ops";
+const port = process.env.PORT || 3000;
+
+logger.info(`Starting ${instance}...`);
+
+app.set("trust proxy", 1); 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,21 +57,20 @@ const startServer = async () => {
     standardHeaders: "draft-7",
     legacyHeaders: false,
     store: new RedisStore({
-      sendCommand: async (...args: string[]) => redisClient.sendCommand(args),
+      sendCommand: (...args: string[]) => redisClient.sendCommand(args),
     }),
   });
 
   app.use(limiter);
 
-  app.use("/auth", authRoute);
-  app.use("/", authMiddleware, userRoute);
+  app.use("/api/auth", authRoute);
+  app.use("/api/users", authMiddleware, userRoute);
+  app.use("/api", uploadRoute);
 
-  app.use(function(err:Error, req:Request, res:Response, next:Function){
-    res.status(500).json("Internal server error")
-  })
+  app.use(errorHandler);
 
   app.listen(port, () => {
-    console.log(`This is ${instance}, listening on ${port}`);
+    logger.info(`This is ${instance}, listening on ${port}`);
   });
 };
 

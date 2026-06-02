@@ -3,15 +3,10 @@ import { pgPool, redisClient, getPgClient } from "../config/db";
 import { User } from "../types";
 import { DatabaseError } from "pg";
 
-
-
 export class UserService {
-  // 1. FETCHING DATA (Cache-Aside Pattern)
   static async getUserProfileByEmail(email: string): Promise<User | null> {
-
     const cacheKey = `user:profile:${email}`;
 
-    // Attempt to retrieve from Redis cache first
     const cachedData = await redisClient.get(cacheKey);
 
     if (cachedData) {
@@ -21,23 +16,19 @@ export class UserService {
 
     console.log("Cache miss for user profile:", email);
 
-    // If not in cache, query PostgreSQL
     const queryText =
-      "SELECT id, name, email, phone, password, isVerified, created_at, updated_at FROM users WHERE email = $1";
+      'SELECT id, name, email, phone, password, is_verified AS "isVerified", role, profile_image_url, created_at, updated_at FROM users WHERE email = $1';
     const result = await pgPool.query(queryText, [email]);
     if (result.rows.length === 0) return null;
     const user = result.rows[0] as User;
 
-    // Store the retrieved user profile in Redis with an expiration time (e.g., 1 hour)
     await redisClient.set(cacheKey, JSON.stringify(user), { EX: 3600 });
     return user;
   }
 
-  static async getUserProfileById(id: number): Promise<User | null> {
-
+  static async getUserProfileById(id: string): Promise<User | null> {
     const cacheKey = `user:profile:${id}`;
 
-    // Attempt to retrieve from Redis cache first
     const cachedData = await redisClient.get(cacheKey);
 
     if (cachedData) {
@@ -46,33 +37,32 @@ export class UserService {
     }
 
     console.log("Cache miss for user profile:", id);
-    
-    // If not in cache, query PostgreSQL
+
     const queryText =
-    "SELECT id, name, email, phone, password, isVerified, created_at, updated_at FROM users WHERE id = $1";
+      'SELECT id, name, email, phone, password, is_verified AS "isVerified", role, profile_image_url, created_at, updated_at FROM users WHERE id = $1';
     const result = await pgPool.query(queryText, [id]);
     if (result.rows.length === 0) return null;
     const user = result.rows[0] as User;
 
-    // Store the retrieved user profile in Redis with an expiration time (e.g., 1 hour)
-  
     await redisClient.set(cacheKey, JSON.stringify(user), { EX: 3600 });
     return user;
   }
 
-
-  static async updateProfile(fieldsToUpdate: Record<string, any>, userId:number): Promise<User | null> {
-    
-    const keys = Object.keys(fieldsToUpdate)
+  static async updateProfile(
+    fieldsToUpdate: Record<string, any>,
+    userId: string,
+  ): Promise<User | null> {
+    const keys = Object.keys(fieldsToUpdate);
 
     if (keys.length === 0) return null;
 
+    const setClause = keys
+      .map((key, index) => `${key} = $${index + 1}`)
+      .join(", ");
 
-    const setClause = keys.map((key, index) => `${key} = $${index + 1}`).join(", ")
+    const queryValues = [...Object.values(fieldsToUpdate), userId];
 
-    const queryValues = [...Object.values(fieldsToUpdate), userId]
-
-    const userIdPlaceholder = `${keys.length + 1}`
+    const userIdPlaceholder = `$${keys.length + 1}`;
 
     const queryText = `
      UPDATE users
@@ -82,56 +72,47 @@ export class UserService {
     `;
 
     try {
-      
-      const result = await pgPool.query(queryText, queryValues)
+      const result = await pgPool.query(queryText, queryValues);
       if (result.rows.length === 0) return null;
-      return result.rows[0] as User
-
+      return result.rows[0] as User;
     } catch (error) {
-      if (error instanceof Error && (error as DatabaseError).code === '23505') {
-        throw new Error("Email is already in use by another user")
+      if (error instanceof Error && (error as DatabaseError).code === "23505") {
+        throw new Error("Email is already in use by another user");
       }
-      throw error
+      throw error;
     }
+  }
 
-  } 
+  static async getUsers(): Promise<User | null> {
+    const cachedKey = "allusers";
 
-  static async getUsers():Promise<User | null> {
+    const cachedData = await redisClient.get(cachedKey);
 
-    const cachedKey = "allusers"
-
-    const cachedData = await redisClient.get(cachedKey)
-  
     if (cachedData) {
       return JSON.parse(cachedData) as User;
     }
 
-    console.log("Miss")
-
-
-
     const queryText = `
-        SELECT * FROM users;
-        RETURN (id, name, email, phone)
-    `
+        SELECT id, name, email, phone, password, role, is_verified AS "isVerified", profile_image_url, created_at, updated_at
+        FROM users;
+    `;
 
     try {
-      const result = await pgPool.query(queryText)
-      await redisClient.set(cachedKey, JSON.stringify(result.rows[0]), {EX : 3600})
-      return result.rows[0] 
+      const result = await pgPool.query(queryText);
+      await redisClient.set(cachedKey, JSON.stringify(result.rows), {
+        EX: 3600,
+      });
+      return result.rows[0];
     } catch (error) {
-      console.error(error)
-      throw new Error ("err from db")
+      console.error(error);
+      throw new Error("err from db");
     }
-
   }
-
-
 
   // 3. SECURE TRANSACTIONS (ACID compliant with safe rollback)
   static async transferFunds(
-    senderId: number,
-    receiverId: number,
+    senderId: string,
+    receiverId: string,
     amount: number,
   ): Promise<boolean> {
     // Acquire an independent single connection client from the general pool
@@ -178,6 +159,48 @@ export class UserService {
     } finally {
       // Crucial: Release client link back to pool for future requests
       client.release();
+    }
+  }
+
+  static async updateUserImage(
+    userId: string,
+    imageUrl: string,
+  ): Promise<User | null> {
+    const queryText = `
+      UPDATE users
+      SET profile_image_url = $1
+      WHERE id = $2
+      RETURNING *
+    `;
+
+    try {
+      const result = await pgPool.query(queryText, [imageUrl, userId]);
+      if (result.rows.length === 0) return null;
+      await redisClient.del(`user:profile:${userId}`);
+      return result.rows[0] as User;
+    } catch (error) {
+      console.error("Error updating user image:", error);
+
+      // If the column is missing in an older DB schema, attempt to add it and retry once
+      const msg = (error as any)?.message || "";
+      if (
+        msg.includes('column "profile_image_url"') ||
+        msg.includes("does not exist")
+      ) {
+        try {
+          await pgPool.query(
+            `ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image_url VARCHAR(512)`,
+          );
+          const retry = await pgPool.query(queryText, [imageUrl, userId]);
+          if (retry.rows.length === 0) return null;
+          await redisClient.del(`user:profile:${userId}`);
+          return retry.rows[0] as User;
+        } catch (innerErr) {
+          console.error("Retry failed adding column:", innerErr);
+        }
+      }
+
+      throw new Error("Failed to update user image");
     }
   }
 }

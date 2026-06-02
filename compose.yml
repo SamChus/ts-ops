@@ -1,5 +1,5 @@
 services:
-  app1:
+  app:
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -24,56 +24,6 @@ services:
       - redis_cache
     networks:
       - bknd_network
-  app2:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3002:3000"
-    volumes:
-      - .:/home/app
-      - /home/app/node_modules
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - DB_HOST=postgres_db
-      - DB_PORT=5432
-      - DB_USER=admin
-      - DB_PASSWORD=password
-      - DB_NAME=mydb
-      - REDIS_HOST=redis_cache
-      - REDIS_PORT=6379
-      - INTANCE=server_2
-    depends_on:
-      - postgres_db
-      - redis_cache
-    networks:
-      - bknd_network
-  app3:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3003:3000"
-    volumes:
-      - .:/home/app
-      - /home/app/node_modules
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - DB_HOST=postgres_db
-      - DB_PORT=5432
-      - DB_USER=admin
-      - DB_PASSWORD=password
-      - DB_NAME=mydb
-      - REDIS_HOST=redis_cache
-      - REDIS_PORT=6379
-      - INTANCE=server_3
-    depends_on:
-      - postgres_db
-      - redis_cache
-    networks:
-      - bknd_network
   nginx_balancer:
     image: nginx:alpine
     container_name: nginx_balancer
@@ -83,9 +33,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certs:/etc/nginx/certs:ro
     depends_on:
-      - app1
-      - app2
-      - app3
+      - app
       - pgadmin_ui
       - redis_commander_ui
     networks:

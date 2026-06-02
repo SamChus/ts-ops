@@ -6,6 +6,7 @@ import { sendEmail } from "./emailService";
 import { UserService } from "./userService";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import AppError from "../utils/appError";
 
 interface loginResposne {
   user: User;
@@ -25,13 +26,13 @@ export class authService {
   static async login(email: string, password: string): Promise<loginResposne> {
     const user = await UserService.getUserProfileByEmail(email);
     if (!user) {
-      throw new Error("USER_NOT_FOUND");
+      throw new AppError("User not found", 404);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("INVALID_PASSWORD");
+      throw new AppError("Invalid password", 401);
     }
     const token = getUserToken(user);
 
@@ -46,9 +47,9 @@ export class authService {
     phone: string,
   ): Promise<User> {
     const queryText = `
-      INSERT INTO users (name, email, password, phone, isVerified) 
-      VALUES ($1, $2, $3, $4, $5) 
-      RETURNING id, name, email, phone, isVerified, created_at, updated_at
+      INSERT INTO users (name, email, password, phone, role, is_verified) 
+      VALUES ($1, $2, $3, $4, $5, $6) 
+      RETURNING id, name, email, phone, role, is_verified AS "isVerified", created_at, updated_at
     `;
 
     try {
@@ -57,14 +58,15 @@ export class authService {
         email,
         password,
         phone,
-        false, // isVerified
+        "guest",
+        false,
       ]);
       const user = result.rows[0] as User;
       return user;
     } catch (error) {
       const pgError = error as { code?: string };
       if (pgError.code === "23505") {
-        throw new Error("EMAIL_ALREADY_EXISTS");
+        throw new AppError("Email already registered", 409);
       }
       throw error;
     }
@@ -74,8 +76,6 @@ export class authService {
     validateUser(email);
 
     const token = getUserToken({ email } as User);
-
-    // In a real application, you would generate a password reset token and send an email to the user with instructions on how to reset their password.
 
     sendEmail(
       email,
@@ -91,19 +91,19 @@ export class authService {
   ): Promise<void> {
     const user = await UserService.getUserProfileByEmail(email);
     if (!user) {
-      throw new Error("USER_NOT_FOUND");
+      throw new AppError("User not found", 404);
     }
 
     let decodedToken;
     try {
       decodedToken = verifyUserToken(token);
     } catch (error) {
-      throw new Error("INVALID_TOKEN");
+      throw new AppError("Invalid or expired token", 400);
     }
 
     const isValidToken = decodedToken.userId === user.id;
     if (!isValidToken) {
-      throw new Error("INVALID_TOKEN");
+      throw new AppError("Invalid or expired token", 400);
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -143,7 +143,7 @@ export class authService {
     const storedToken = await redisClient.get(redisKey);
 
     if (!storedToken) {
-      throw new Error("TOKEN_EXPIRED");
+      throw new AppError("Token expired", 400);
     }
 
     const isMatch = crypto.timingSafeEqual(
@@ -152,12 +152,12 @@ export class authService {
     );
 
     if (!isMatch) {
-      throw new Error("INVALID_TOKEN");
+      throw new AppError("Invalid token", 400);
     }
 
     const queryText = `
       UPDATE users 
-      SET isVerified = true 
+      SET is_verified = true 
       WHERE email = $1
     `;
     await pgPool.query(queryText, [email]);
