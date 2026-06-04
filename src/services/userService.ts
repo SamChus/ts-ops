@@ -83,13 +83,13 @@ export class UserService {
     }
   }
 
-  static async getUsers(): Promise<User | null> {
+  static async getAllUsers(): Promise<User[]> {
     const cachedKey = "allusers";
-
+    
     const cachedData = await redisClient.get(cachedKey);
 
     if (cachedData) {
-      return JSON.parse(cachedData) as User;
+      return JSON.parse(cachedData) as User[];
     }
 
     const queryText = `
@@ -102,7 +102,7 @@ export class UserService {
       await redisClient.set(cachedKey, JSON.stringify(result.rows), {
         EX: 3600,
       });
-      return result.rows[0];
+      return result.rows as User[];
     } catch (error) {
       console.error(error);
       throw new Error("err from db");

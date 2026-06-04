@@ -48,3 +48,8 @@ export const editUserProfile = async (
   }
 };
 
+export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+  const users = await UserService.getAllUsers();
+  const safeUsers = users.map(({ password, ...rest }) => rest);
+  res.status(200).json({ message: "Users retrieved successfully", data: safeUsers });
+}

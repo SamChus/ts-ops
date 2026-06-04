@@ -1,11 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
-
 import express = require("express");
 import type { Application, Request, Response } from "express-serve-static-core";
 import AppError from "./utils/appError";
 import { errorHandler } from "./middlewares/errorHandler";
-
 import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import uploadRoute from "./routes/upload.routes";
@@ -19,11 +17,13 @@ import logger from "./utils/winston";
 
 process.on("unhandledRejection", (reason, promise) => {
   logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+  console.error("Unhandled Rejection:", reason);
   process.exit(1);
 });
 
 process.on("uncaughtException", (error) => {
   logger.error("Uncaught Exception:", error);
+  console.error("Uncaught Exception:", error);
   process.exit(1);
 });
 
@@ -31,10 +31,16 @@ const app: Application = express();
 const instance = process.env.INSTANCE || "ts-ops";
 const port = process.env.PORT || 3000;
 
-logger.info(`Starting ${instance}...`);
-
-app.set("trust proxy", 1); 
-app.use(cors());
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Authorization"],
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -47,31 +53,36 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 const startServer = async () => {
-  await initDatabase();
-  await verifySTMP();
+  try {
+    await initDatabase();
+    await verifySTMP();
 
-  const limiter = rateLimit({
-    windowMs: 1 * 60 * 1000,
-    max: 10,
-    message: "Too many requests for this IP, please try again later",
-    standardHeaders: "draft-7",
-    legacyHeaders: false,
-    store: new RedisStore({
-      sendCommand: (...args: string[]) => redisClient.sendCommand(args),
-    }),
-  });
+    const limiter = rateLimit({
+      windowMs: 1 * 60 * 1000,
+      max: 10,
+      message: "Too many requests for this IP, please try again later",
+      standardHeaders: "draft-7",
+      legacyHeaders: false,
+      store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.sendCommand(args),
+      }),
+    });
 
-  app.use(limiter);
+    app.use(limiter);
 
-  app.use("/api/auth", authRoute);
-  app.use("/api/users", authMiddleware, userRoute);
-  app.use("/api", uploadRoute);
+    app.use("/api/auth", authRoute);
+    app.use("/api/users", authMiddleware, userRoute);
+    app.use("/api", uploadRoute);
 
-  app.use(errorHandler);
+    app.use(errorHandler);
 
-  app.listen(port, () => {
-    logger.info(`This is ${instance}, listening on ${port}`);
-  });
+    app.listen(port, () => {
+      logger.info(`This is ${instance}, listening on ${port}`);
+    });
+  } catch (error) {
+    logger.error("Failed to start server:", error);
+    process.exit(1);
+  }
 };
 
 startServer();

@@ -16,6 +16,7 @@ export const login = async (
   if (error) throw new AppError("Invalid Input", 400);
   const { email, password } = req.body as LoginRequest;
   const { user, token } = await authService.login(email, password);
+  res.setHeader("X-Auth-Token", token);
   const newUser = { ...user, password: undefined };
   res.json({
     message: "User logged in successfully",

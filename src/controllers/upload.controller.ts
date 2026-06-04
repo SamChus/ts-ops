@@ -1,4 +1,4 @@
-import { s3 } from "../config/aws-s3";
+import { s3, bucketName } from "../config/aws-s3";
 import type { Request, Response } from "express";
 import AppError from "../utils/appError";
 import cloudinary from "../config/cloudinary";
@@ -44,7 +44,7 @@ const uploadApartmentImage = async (req: Request, res: Response) => {
     if (!req.file) return res.status(400).json({ error: "No file provided" });
 
     const params = {
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Bucket: bucketName,
       Key: `apartments/${Date.now()}-${req.file.originalname}`,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,

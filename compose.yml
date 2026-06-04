@@ -18,12 +18,18 @@ services:
       - DB_NAME=mydb
       - REDIS_HOST=redis_cache
       - REDIS_PORT=6379
-      - INTANCE=server_1
+      - INSTANCE=server_1
+      # --- AWS ENV VARS ---
+      - AWS_ACCESS_KEY_ID=yourAccessKey
+      - AWS_SECRET_ACCESS_KEY=yourSecretKey
+      - AWS_REGION=yourRegion
+      - AWS_BUCKET=yourBucketName
     depends_on:
       - postgres_db
       - redis_cache
     networks:
       - bknd_network
+
   nginx_balancer:
     image: nginx:alpine
     container_name: nginx_balancer
@@ -57,13 +63,13 @@ services:
 
   # --- POSTGRES GRAPHICAL INTERFACE ---
   pgadmin_ui:
-    image: dpage/pgadmin4:9.15 # Using the latest pgAdmin 4 image
+    image: dpage/pgadmin4:9.15
     container_name: pgadmin_ui
     ports:
-      - "8080:80" # Access at http://localhost:8080
+      - "8080:80"
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com # Login Email
-      - PGADMIN_DEFAULT_PASSWORD=adminpassword # Login Password
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=adminpassword
     depends_on:
       - postgres_db
     networks:
@@ -85,13 +91,45 @@ services:
     image: rediscommander/redis-commander:latest
     container_name: redis_commander_ui
     ports:
-      - "8081:8081" # Access at http://localhost:8081
+      - "8081:8081"
     environment:
-      - REDIS_HOSTS=local:redis_cache:6379 # Tells it where to look for Redis
+      - REDIS_HOSTS=local:redis_cache:6379
     depends_on:
       - redis_cache
     networks:
       - bknd_network
+
+  # --- OBSERVABILITY / MONITORING STACK ---
+  loki:
+    image: grafana/loki:3.0.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - bknd_network # Network fixed
+
+  promtail:
+    image: grafana/promtail:3.0.0
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki # Ensured loki starts first
+    networks:
+      - bknd_network # Network fixed
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    ports:
+      - "4000:3000" # UI access stays on localhost:4000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
+    networks:
+      - bknd_network # Network fixed
 
 networks:
   bknd_network:

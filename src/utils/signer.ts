@@ -1,5 +1,8 @@
 import jwt from "jsonwebtoken";
 import { User } from "../types";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const getUserToken = (user: User) => {
   return <string>(
@@ -9,12 +12,12 @@ export const getUserToken = (user: User) => {
   );
 };
 
-export const verifyUserToken = (token: string): { userId: number } => {
+export const verifyUserToken = (token: string): { userId: string } => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "") as {
-      userId: number;
+      userId: string;
     };
-    if (!decoded || typeof decoded.userId !== "number") {
+    if (!decoded || typeof decoded.userId !== "string") {
       throw new Error("INVALID_TOKEN");
     }
     return decoded;
