@@ -1,11 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-import dotenv from "dotenv";
-import { verifyUserToken } from "../utils/signer";
-import logger from "../utils/winston";
-
-dotenv.config();
 
 declare global {
   namespace Express {
@@ -29,6 +24,7 @@ function authMiddleware(req: Request, res: Response, next: Function) {
        process.env.JWT_SECRET || "",
      ) as {
        userId: string;
+       role: string
      };
 
     if (!decoded || typeof decoded.userId !== "string") {

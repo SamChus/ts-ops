@@ -45,6 +45,7 @@ export class authService {
     email: string,
     password: string,
     phone: string,
+    role: string
   ): Promise<User> {
     const queryText = `
       INSERT INTO users (name, email, password, phone, role, is_verified) 
@@ -58,7 +59,7 @@ export class authService {
         email,
         password,
         phone,
-        "guest",
+        role,
         false,
       ]);
       const user = result.rows[0] as User;

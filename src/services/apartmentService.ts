@@ -1,8 +1,10 @@
 import { pgPool } from "../config/db";
 import AppError from "../utils/appError";
 import logger from "../utils/winston";
+import { UserService } from "./userService";
 
 interface Apartment {
+  agent_id: string;
   title: string;
   description: string;
   price_per_night: number;
@@ -15,14 +17,22 @@ interface Apartment {
 
 export class ApartmentService {
   static async createApartment(data: Apartment): Promise<void> {
+
+    const user = await UserService.getUserProfileById(data.agent_id);
+
+    if (user?.role !== "agent") {
+      throw new AppError("Only agents can create apartments", 403);
+    }
+
     const queryText = `
-            INSERT INTO apartments (title, description, price_per_night, location, address, city, max_guests, status) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING id, title, description, price_per_night, location, address, city, max_guests, status, created_at, updated_at
+            INSERT INTO apartments ( agent_id, title, description, price_per_night, location, address, city, max_guests, status) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING id, agent_id, title, description, price_per_night, location, address, city, max_guests, status, created_at, updated_at
         `;
 
     try {
       const result = await pgPool.query(queryText, [
+        data.agent_id,
         data.title,
         data.description,
         data.price_per_night,
@@ -32,6 +42,7 @@ export class ApartmentService {
         data.max_guests,
         data.status,
       ]);
+      return result.rows[0]
     } catch (ex) {
       logger.error("Error creating apartment:", ex);
       throw new AppError("Failed to create apartment", 500);
@@ -83,7 +94,7 @@ export class ApartmentService {
   static async addApartmentImages(
     apartmentId: string,
     imageUrls: string[],
-  ): Promise<void> {
+  ): Promise<Apartment> {
     const queryText = `
         UPDATE apartments
         SET image_urls = COALESCE(image_urls, '{}') || $1::text[]
@@ -91,7 +102,8 @@ export class ApartmentService {
         RETURNING id, title, description, price_per_night, location, address, city, max_guests, status, image_urls, created_at, updated_at
     `;
     try {
-      await pgPool.query(queryText, [imageUrls, apartmentId]);
+      const result = await pgPool.query(queryText, [imageUrls, apartmentId]);
+      return result.rows[0];
     } catch (ex) {
       logger.error("Error adding apartment images:", ex);
       throw new AppError("Failed to add apartment images", 500);
@@ -143,6 +155,24 @@ export class ApartmentService {
             logger.error("Error fetching all apartments:", ex);
             throw new AppError("Failed to fetch apartments", 500);
         }
+    }
+
+    static async updateApartmentStatus(id: string, status: string): Promise<void> {
+        const queryText = `
+         UPDATE apartments
+         SET status = $1, updated_at = NOW()
+         RETURNING id, title, description, price_per_night, location, address, city, max_guests, status, created_at, updated_at
+         `
+
+         try {
+          const result = await pgPool.query(queryText, [status, id]);
+          if (result.rows.length === 0) {
+            throw new AppError("Apartment not found", 404);
+          }
+         } catch (error) {
+          logger.error("Error updating apartment status:", error);
+          throw new AppError("Failed to update apartment status", 500);
+         }
     }
 }
 

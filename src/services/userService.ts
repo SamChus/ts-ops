@@ -4,6 +4,36 @@ import { User } from "../types";
 import { DatabaseError } from "pg";
 
 export class UserService {
+  // ============ CACHE MANAGEMENT ============
+  /**
+   * Clears cache for a specific user by ID
+   */
+  static async clearUserCacheById(userId: string): Promise<void> {
+    await redisClient.del(`user:profile:${userId}`);
+    await redisClient.del("allusers");
+  }
+
+  /**
+   * Clears cache for a specific user by email
+   */
+  static async clearUserCacheByEmail(email: string): Promise<void> {
+    await redisClient.del(`user:profile:${email}`);
+    await redisClient.del("allusers");
+  }
+
+  /**
+   * Clears ALL user-related caches
+   */
+  static async clearAllUserCaches(): Promise<void> {
+    // Get all cache keys matching user pattern
+    const keys = await redisClient.keys("user:*");
+    if (keys.length > 0) {
+      await redisClient.del(keys);
+    }
+    await redisClient.del("allusers");
+  }
+
+  // ============ USER OPERATIONS ============
   static async getUserProfileByEmail(email: string): Promise<User | null> {
     const cacheKey = `user:profile:${email}`;
 
@@ -74,7 +104,25 @@ export class UserService {
     try {
       const result = await pgPool.query(queryText, queryValues);
       if (result.rows.length === 0) return null;
-      return result.rows[0] as User;
+
+      const updatedUser = result.rows[0] as User;
+
+      // IMPORTANT: Invalidate all related cache keys so fresh data is fetched next time
+      await redisClient.del(`user:profile:${userId}`);
+      if (updatedUser.email) {
+        await redisClient.del(`user:profile:${updatedUser.email}`);
+      }
+      // Also invalidate the all users cache since a user was modified
+      await redisClient.del("allusers");
+
+      // Cache the fresh updated data immediately
+      await redisClient.set(
+        `user:profile:${userId}`,
+        JSON.stringify(updatedUser),
+        { EX: 3600 },
+      );
+
+      return updatedUser;
     } catch (error) {
       if (error instanceof Error && (error as DatabaseError).code === "23505") {
         throw new Error("Email is already in use by another user");
@@ -85,7 +133,7 @@ export class UserService {
 
   static async getAllUsers(): Promise<User[]> {
     const cachedKey = "allusers";
-    
+
     const cachedData = await redisClient.get(cachedKey);
 
     if (cachedData) {

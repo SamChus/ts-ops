@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 5s # How frequently to pull metrics from your targets
+
+scrape_configs:
+  - job_name: 'node-app'
+    static_configs:
+      - targets: ['app:3000'] # Points directly to your app container port

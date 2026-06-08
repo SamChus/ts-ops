@@ -33,13 +33,13 @@ export const register = async (
   const { error } = validateRegister(req.body);
   if (error) throw new AppError("Invalid Input", 400);
 
-  const { name, email, password, phone } = req.body as RegisterRequest;
+  const { name, email, password, phone, role } = req.body as RegisterRequest;
 
   const existingUser = await UserService.getUserProfileByEmail(email);
   if (existingUser) throw new AppError("Email already registered", 409);
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await authService.register(name, email, hashedPassword, phone);
+  const user = await authService.register(name, email, hashedPassword, phone, role);
 
   const newUser = { ...user, password: undefined };
   res.json({ message: "User registered successfully", data: newUser });

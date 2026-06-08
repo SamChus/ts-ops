@@ -1,16 +1,16 @@
 import { Router } from "express";
 import uploadMiddleware from "../middlewares/upload";
+import type { Request, Response, NextFunction } from "express";
 import {
-  uploadApartmentImage,
   uploadProfileImage,
 } from "../controllers/upload.controller";
 import authMiddleware from "../middlewares/auth";
-import type { Request, Response, NextFunction } from "express";
+import { uploadApartmentImage } from "../controllers/apartment.controller";
 
 const router = Router();
 
 // Error handler for multer errors
-const handleMulterError = (
+export const handleMulterError = (
   err: any,
   req: Request,
   res: Response,
@@ -42,7 +42,7 @@ router.post(
   "/upload/apartment",
   authMiddleware,
   (req: Request, res: Response, next: NextFunction) => {
-    uploadMiddleware.single("apartmentImg")(req, res, (err) =>
+    uploadMiddleware.array("apartmentImg")(req, res, (err) =>
       handleMulterError(err, req, res, next),
     );
   },

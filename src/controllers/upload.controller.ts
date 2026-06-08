@@ -1,8 +1,14 @@
 import { s3, bucketName } from "../config/aws-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import type { Request, Response } from "express";
 import AppError from "../utils/appError";
 import cloudinary from "../config/cloudinary";
 import { UserService } from "../services/userService";
+import logger from "../utils/winston";
+
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+const REGION = process.env.AWS_REGION || "us-east-1"; 
 
 const uploadProfileImage = async (req: Request, res: Response) => {
   try {
@@ -39,24 +45,55 @@ const uploadProfileImage = async (req: Request, res: Response) => {
   }
 };
 
-const uploadApartmentImage = async (req: Request, res: Response) => {
+
+
+
+const uploadToS3 = async (
+  files: any[],
+  bucketName: string,
+  folder: string,
+): Promise<string[]> => {
+  const s3Client = new S3Client({ region: process.env.AWS_REGION || "us-east-1"});
   try {
-    if (!req.file) return res.status(400).json({ error: "No file provided" });
 
-    const params = {
-      Bucket: bucketName,
-      Key: `apartments/${Date.now()}-${req.file.originalname}`,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-      // ACL: 'public-read' // Uncomment if you want public bucket access (adjust as per bucket policy)
-    };
+    // Map through files and upload each one to S3
+    const uploadPromises = files.map((file) => {
+      const s3Key = `${folder}/${Date.now()}-${file.originalname}`;
 
-    const data = await s3.upload(params).promise();
+      const command = new PutObjectCommand({
+        Bucket: bucketName                                                                                                                                                                                     ,
+        Key: s3Key,
+        Body: file.buffer, // Multer memoryStorage provides this buffer
+        ContentType: file.mimetype,
+      });
 
-    res.status(200).json({ url: data.Location });
+      return s3Client.send(command).then(() => {
+        return `https://${bucketName}.s3.${REGION}.amazonaws.com/${s3Key}`;
+      });
+    });
+
+    // Wait for all S3 uploads to complete parallelly
+    const uploadedUrls = await Promise.all(uploadPromises);
+    return uploadedUrls;
   } catch (error) {
+    logger.error("uploadToS3 error:", error);
     throw new AppError("Image upload failed", 500);
   }
 };
 
-export { uploadProfileImage, uploadApartmentImage };
+const generatePresignedUrl = async (filename:string, bucketName: string) => {
+  
+  try {
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: filename,
+  });
+    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    return url;
+  } catch (error) {
+    logger.error("generatePresignedUrl error:", error);
+    throw new AppError("Failed to generate presigned URL", 500);
+  }
+};
+
+export { uploadProfileImage , uploadToS3, generatePresignedUrl};

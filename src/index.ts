@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import client from "prom-client";
 dotenv.config();
 import express = require("express");
 import type { Application, Request, Response } from "express-serve-static-core";
@@ -7,6 +8,7 @@ import { errorHandler } from "./middlewares/errorHandler";
 import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import uploadRoute from "./routes/upload.routes";
+import apartmentRoute from "./routes/apartment.routes";
 import { initDatabase, redisClient } from "./config/db";
 import cors from "cors";
 import { verifySTMP } from "./validate/stmp";
@@ -52,6 +54,18 @@ app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
 
+
+// Automatically collect default metrics (CPU, Memory, Event Loop Lag)
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ register: client.register });
+
+// Expose the Prometheus scraping endpoint
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
+
 const startServer = async () => {
   try {
     await initDatabase();
@@ -73,6 +87,7 @@ const startServer = async () => {
     app.use("/api/auth", authRoute);
     app.use("/api/users", authMiddleware, userRoute);
     app.use("/api", uploadRoute);
+    app.use("/api/apartments", authMiddleware, apartmentRoute);
 
     app.use(errorHandler);
 

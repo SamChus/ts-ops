@@ -9,21 +9,21 @@ services:
       - .:/home/app
       - /home/app/node_modules
     environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - DB_HOST=postgres_db
-      - DB_PORT=5432
-      - DB_USER=admin
-      - DB_PASSWORD=password
-      - DB_NAME=mydb
-      - REDIS_HOST=redis_cache
-      - REDIS_PORT=6379
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - INSTANCE=server_1
       # --- AWS ENV VARS ---
-      - AWS_ACCESS_KEY_ID=yourAccessKey
-      - AWS_SECRET_ACCESS_KEY=yourSecretKey
-      - AWS_REGION=yourRegion
-      - AWS_BUCKET=yourBucketName
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET=${AWS_BUCKET}  
     depends_on:
       - postgres_db
       - redis_cache
@@ -130,6 +130,17 @@ services:
       - loki
     networks:
       - bknd_network # Network fixed
+    
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: ts-ops-prometheus-1
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090" # Optional: Access the raw Prometheus UI at http://localhost:9090
+    networks:
+      - bknd_network
+
 
 networks:
   bknd_network:

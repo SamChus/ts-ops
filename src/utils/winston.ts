@@ -1,28 +1,50 @@
-import wiston from "winston";
+import winston from "winston";
 
-const { combine, timestamp, json, errors, simple } = wiston.format;
 
-const logger = wiston.createLogger({
+//@ts-ignore
+import PostgresTransport from "winston-postgres-transport";
+import dotenv from "dotenv";
+
+dotenv.config();
+const { combine, timestamp, json, errors, simple } = winston.format;
+
+// 1. Core logger configured with safe transports only
+export const logger = winston.createLogger({
   level: "info",
   format: combine(errors({ stack: true }), timestamp(), json()),
   defaultMeta: { service: "user-service" },
   transports: [
-    new wiston.transports.Console({
+    new winston.transports.Console({
       format: combine(simple(), timestamp()),
     }),
-    new wiston.transports.File({
+    new winston.transports.File({
       filename: "./logs/error.log",
       level: "error",
     }),
-    new wiston.transports.File({ filename: "./logs/combined.log" }),
+    new winston.transports.File({ filename: "./logs/combined.log" }),
   ],
   exceptionHandlers: [
-    new wiston.transports.File({ filename: "./logs/exceptions.log" }),
+    new winston.transports.File({ filename: "./logs/exceptions.log" }),
   ],
   rejectionHandlers: [
-    new wiston.transports.File({ filename: "./logs/rejections.log" }),
+    new winston.transports.File({ filename: "./logs/rejections.log" }),
   ],
 });
 
+// 2. Function to safely attach Postgres AFTER tables are verified
+export const connectDbLogging = () => {
+  const dbTransport = new PostgresTransport({
+    postgresUrl: process.env.DB_URL,
+    tableName: "logs",
+  });
+
+  dbTransport.on("error", (err: Error) => {
+    console.error("Winston DB Transport Error: ", err.message);
+  });
+
+  logger.add(dbTransport);
+  logger.info("Winston PostgreSQL logging transport attached active.");
+  logger.info("Database logging initialized", {service: "db-service"});
+};
 
 export default logger;

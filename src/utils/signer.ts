@@ -1,21 +1,20 @@
 import jwt from "jsonwebtoken";
 import { User } from "../types";
-import dotenv from "dotenv";
 
-dotenv.config();
 
 export const getUserToken = (user: User) => {
   return <string>(
-    jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "", {
+    jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET || "", {
       expiresIn: "1h",
     })
   );
 };
 
-export const verifyUserToken = (token: string): { userId: string } => {
+export const verifyUserToken = (token: string): { userId: string, role: string } => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "") as {
       userId: string;
+      role: string
     };
     if (!decoded || typeof decoded.userId !== "string") {
       throw new Error("INVALID_TOKEN");
