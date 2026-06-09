@@ -5,25 +5,17 @@ import { DatabaseError } from "pg";
 
 export class UserService {
   // ============ CACHE MANAGEMENT ============
-  /**
-   * Clears cache for a specific user by ID
-   */
   static async clearUserCacheById(userId: string): Promise<void> {
     await redisClient.del(`user:profile:${userId}`);
     await redisClient.del("allusers");
   }
 
-  /**
-   * Clears cache for a specific user by email
-   */
   static async clearUserCacheByEmail(email: string): Promise<void> {
     await redisClient.del(`user:profile:${email}`);
     await redisClient.del("allusers");
   }
 
-  /**
-   * Clears ALL user-related caches
-   */
+
   static async clearAllUserCaches(): Promise<void> {
     // Get all cache keys matching user pattern
     const keys = await redisClient.keys("user:*");

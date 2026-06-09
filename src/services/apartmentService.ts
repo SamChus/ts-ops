@@ -12,12 +12,17 @@ interface Apartment {
   address: string;
   city: string;
   max_guests: number;
-  status: 'available' | 'booked' | 'reserved' | 'under_maintenance' | 'leased' | 'occupied'; // 'available', 'booked', 'reserved', 'under_maintenance', "leased", "occupied" 
+  status:
+    | "available"
+    | "booked"
+    | "reserved"
+    | "under_maintenance"
+    | "leased"
+    | "occupied"; // 'available', 'booked', 'reserved', 'under_maintenance', "leased", "occupied"
 }
 
 export class ApartmentService {
   static async createApartment(data: Apartment): Promise<void> {
-
     const user = await UserService.getUserProfileById(data.agent_id);
 
     if (user?.role !== "agent") {
@@ -42,7 +47,7 @@ export class ApartmentService {
         data.max_guests,
         data.status,
       ]);
-      return result.rows[0]
+      return result.rows[0];
     } catch (ex) {
       logger.error("Error creating apartment:", ex);
       throw new AppError("Failed to create apartment", 500);
@@ -128,51 +133,53 @@ export class ApartmentService {
     }
   }
 
-    static async getApartmentById(id: string): Promise<any> {
-        const queryText = `
+  static async getApartmentById(id: string): Promise<any> {
+    const queryText = `
             SELECT * FROM apartments
             WHERE id = $1
         `;
 
-        try {
-            const result = await pgPool.query(queryText, [id]);
-            return result.rows[0];
-        } catch (ex) {
-            logger.error("Error fetching apartment by ID:", ex);
-            throw new AppError("Failed to fetch apartment", 500);
-        }
+    try {
+      const result = await pgPool.query(queryText, [id]);
+      return result.rows[0];
+    } catch (ex) {
+      logger.error("Error fetching apartment by ID:", ex);
+      throw new AppError("Failed to fetch apartment", 500);
     }
+  }
 
-    static async getAllApartments(): Promise<any[]> {
-        const queryText = `
-            SELECT * FROM apartments
+  static async getAllApartments(): Promise<any[]> {
+    const queryText = `
+            SELECT * FROM apartments 
         `;
 
-        try {
-            const result = await pgPool.query(queryText);
-            return result.rows;
-        } catch (ex) {
-            logger.error("Error fetching all apartments:", ex);
-            throw new AppError("Failed to fetch apartments", 500);
-        }
+    try {
+      const result = await pgPool.query(queryText);
+      return result.rows;
+    } catch (ex) {
+      logger.error("Error fetching all apartments:", ex);
+      throw new AppError("Failed to fetch apartments", 500);
     }
+  }
 
-    static async updateApartmentStatus(id: string, status: string): Promise<void> {
-        const queryText = `
+  static async updateApartmentStatus(
+    id: string,
+    status: string,
+  ): Promise<void> {
+    const queryText = `
          UPDATE apartments
          SET status = $1, updated_at = NOW()
          RETURNING id, title, description, price_per_night, location, address, city, max_guests, status, created_at, updated_at
-         `
+         `;
 
-         try {
-          const result = await pgPool.query(queryText, [status, id]);
-          if (result.rows.length === 0) {
-            throw new AppError("Apartment not found", 404);
-          }
-         } catch (error) {
-          logger.error("Error updating apartment status:", error);
-          throw new AppError("Failed to update apartment status", 500);
-         }
+    try {
+      const result = await pgPool.query(queryText, [status, id]);
+      if (result.rows.length === 0) {
+        throw new AppError("Apartment not found", 404);
+      }
+    } catch (error) {
+      logger.error("Error updating apartment status:", error);
+      throw new AppError("Failed to update apartment status", 500);
     }
+  }
 }
-
