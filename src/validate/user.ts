@@ -2,7 +2,7 @@ import { UserService } from "../services/userService";
 
 
 export const validateUser = async (email: string) => {
-      const user = await UserService.getUserProfileByEmail(email);
+      const user = await UserService.getUserByEmail(email);
     
         if (!user) {
           throw new Error("USER_NOT_FOUND");
@@ -11,7 +11,7 @@ export const validateUser = async (email: string) => {
 }
 
 export const checkEmail = async (email: string) => {
-    const existingUser = await UserService.getUserProfileByEmail(email);
+    const existingUser = await UserService.getUserByEmail(email);
     if (existingUser) {
       throw new Error("EMAIL_ALREADY_EXISTS");
     }
