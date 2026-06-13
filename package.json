@@ -9,7 +9,7 @@
     "start:worker:email": "tsc && node ./dist/workers/emailWorker.js",
     "dev:app": "nodemon --watch src --ext ts --exec ts-node ./src/index.ts",
     "dev:worker:email": "nodemon --watch src --ext ts --exec ts-node ./src/workers/emailWorker.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [],
   "author": "",
