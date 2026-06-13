@@ -94,7 +94,8 @@ export interface IApartmentRepository {
     getApartmentById(id: string): Promise<IApartment | null>;
     updateApartment(id: string, apartment: Partial<IApartment>): Promise<IApartment | null>;
     deleteApartment(id: string): Promise<void>;
-    getAllApartments(query?: IApartmentQuery): Promise<IApartment[]>;
+    getAllApartments(): Promise<IApartment[]>;
+    addImages(apartmentId: string, imageUrls: string[]): Promise<IApartment | null>;
 }
 
 export interface IBookingRepository {

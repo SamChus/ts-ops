@@ -1,4 +1,6 @@
-@baseUrl = http://localhost:3000/api
+# Try 'localhost' if '127.0.0.1' fails, or vice versa. 
+# In Docker Desktop for Windows, both usually work if port mapping is correct.
+@baseUrl = https://localhost/api
 
 ### 1. Register a new user
 # This endpoint hashes the password and triggers a welcome email via RabbitMQ
@@ -10,7 +12,7 @@ Content-Type: application/json
   "email": "dev@example.com",
   "password": "Password123!",
   "phone": "08012345678",
-  "role": "agent"
+  "role": "agent" 
 }
 
 ### 2. Login

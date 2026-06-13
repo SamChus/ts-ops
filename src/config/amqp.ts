@@ -7,7 +7,7 @@ class AMQPManager {
   private connectionPromise: Promise<ChannelModel> | null = null;
 
 
-  async getConnection(retries = 5, delay = 5000): Promise<ChannelModel> {
+  async getConnection(retries = 8, delay = 5000): Promise<ChannelModel> {
     if (this.connection) return this.connection;
     if (this.connectionPromise) return this.connectionPromise;
 

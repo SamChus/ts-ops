@@ -1,17 +1,10 @@
 import { Pool } from "pg";
-import { IApartment } from "./repository";
+import { IApartment, IApartmentRepository } from "./repository";
 
-export interface IApartmentRepository {
-    createApartment(apartment: IApartment): Promise<IApartment>;
-    getApartmentById(id: string): Promise<IApartment | null>;
-    updateApartment(id: string, apartment: Partial<IApartment>): Promise<IApartment | null>;
-    deleteApartment(id: string): Promise<void>;
-    getAllApartments(): Promise<IApartment[]>;
-    addImages(apartmentId: string, imageUrls: string[]): Promise<IApartment | null>;
-}
+
 
 export class ApartmentRepository implements IApartmentRepository {
-    constructor(private pool: Pool) {}
+    constructor(private pool: Pool) {}                                                                                                           
 
     async createApartment(apartment: IApartment): Promise<IApartment> {
         const query = `

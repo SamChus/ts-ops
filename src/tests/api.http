@@ -9,7 +9,7 @@ Content-Type: application/json
   "name": "Test Engineer",
   "email": "dev@example.com",
   "password": "Password123!",
-  "phone": "08012345678",
+  "phone": "08012345678", 
   "role": "agent"
 }
 
