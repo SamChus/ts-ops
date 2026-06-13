@@ -2,7 +2,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      target: development
+    command: npm run dev:app
     ports:
       - "3001:3000"
     volumes:
@@ -24,11 +25,31 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
       - AWS_BUCKET=${AWS_BUCKET}  
+
+      - AMQP_URL=amqp://rabbitmq:5672
     depends_on:
       - postgres_db
       - redis_cache
+      - rabbitmq
     networks:
       - bknd_network
+
+  email_worker:
+    build: 
+      context: .
+      target: development
+    container_name: email_worker
+    command: npm run dev:worker:email
+    volumes:
+      - .:/home/app:ro
+      - /home/app/node_modules
+    depends_on:
+      - rabbitmq
+    environment:
+      - AMQP_URL=${AMQP_URL}
+    networks:
+      - bknd_network
+
 
   nginx_balancer:
     image: nginx:alpine
@@ -141,6 +162,14 @@ services:
     networks:
       - bknd_network
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ts-ops-rabitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - bknd_network
 
 networks:
   bknd_network:

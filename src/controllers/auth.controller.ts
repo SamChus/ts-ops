@@ -6,6 +6,11 @@ import { validateLogin, validateRegister } from "../validate/auth";
 import { LoginRequest, RegisterRequest } from "../types";
 import { authService } from "../services/authService";
 import AppError from "../utils/appError";
+import {amqpManager} from "../config/amqp";
+import { json } from "node:stream/consumers";
+import logger from "../utils/winston";
+import os from "node:os";
+import { IUser } from "../data/repositories/repository";
 
 export const login = async (
   req: Request,
@@ -17,6 +22,37 @@ export const login = async (
   const { email, password } = req.body as LoginRequest;
   const { user, token } = await authService.login(email, password);
   res.setHeader("X-Auth-Token", token);
+
+ try {
+   const channel = await amqpManager.createChannel()
+   const queueName = "email_queue";
+
+   await channel.assertQueue(queueName, { durable: true });
+
+   const userAgent = req.headers["user-agent"] || "Unknown Device";
+   const clientIp = req.ip || req.headers["x-forwarded-for"] || "127.0.0.1";
+
+   const payload = {
+     emailType: "LOGIN_DETECTED",
+     recipient: email,
+     metadata: {
+       device: userAgent, 
+       ip: clientIp,
+       time: new Date().toISOString(),
+     },
+   };
+
+   channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)), {
+     persistent: true,
+   });
+
+   
+   await channel.close();
+ } catch (error) {
+   logger.error("⚠️ Failed to dispatch login alert event to AMQP:", error);
+ }
+
+
   const newUser = { ...user, password: undefined };
   res.json({
     message: "User logged in successfully",
@@ -35,14 +71,49 @@ export const register = async (
 
   const { name, email, password, phone, role } = req.body as RegisterRequest;
 
-  const existingUser = await UserService.getUserProfileByEmail(email);
+  const existingUser = await UserService.getUserByEmail(email);
   if (existingUser) throw new AppError("Email already registered", 409);
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await authService.register(name, email, hashedPassword, phone, role);
+  const user = await authService.register({
+    name,
+    email,
+    password: hashedPassword,
+    phone,
+    role,
+  } as IUser);
+
+(async () => {
+  try {
+    const channel = await amqpManager.createChannel()
+    const queueName = "email_queue";
+  
+    await channel.assertQueue(queueName, { durable: true });
+  
+    const payload = {
+      emailType: "WELCOME_EMAIL",
+      recipient: email,
+      metadata: { name },
+    };
+  
+   channel.sendToQueue(
+      queueName,
+      Buffer.from(JSON.stringify(payload)),
+      { persistent: true },
+    );
+  
+    await channel.close();
+  } catch (ex) {
+    logger.error(
+      "Failed to dispatch message to broker queue:",
+      ex,
+    );
+  }
+})()
+  
 
   const newUser = { ...user, password: undefined };
-  res.json({ message: "User registered successfully", data: newUser });
+  return res.json({ message: "User registered successfully", data: newUser });
 };
 
 export const forgetPassword = async (
@@ -74,17 +145,17 @@ export const resetPassword = async (
 export const sendToken = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { email } = req.body;
 
-    if (!email) {
-      throw new AppError("Email is required", 400);
-    }
-
-    await authService.sendToken(email);
-    res.json({ message: "Token sent successfully to your email" });
+  if (!email) {
+    throw new AppError("Email is required", 400);
   }
+
+  await authService.sendToken(email);
+  res.json({ message: "Token sent successfully to your email" });
+};
 
 export const verifyEmail = async (
   req: Request,

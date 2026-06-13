@@ -14,13 +14,15 @@ export const transporter = nodemailer.createTransport({
 export const sendEmail = async (
   to: string,
   subject: string,
-    text: string
+    text: string,
+    html?: string
 ): Promise<void> => {
   const mailOptions = {
     from: process.env.SMTP_USER || "test@gmail.com",
     to,
     subject,
-    text
+    text,
+    html,
   };
 
   try {

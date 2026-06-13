@@ -464,3 +464,141 @@
 {"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-08T12:13:57.565Z"}
 {"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-08T12:13:57.573Z"}
 {"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-08T12:14:00.304Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T11:27:18.853Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T11:27:18.867Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T11:27:18.883Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T11:27:18.974Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T11:27:18.990Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T11:27:21.529Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T12:04:10.615Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T12:04:10.627Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T12:04:10.633Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T12:04:10.655Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T12:04:10.672Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T12:04:12.815Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T12:14:09.436Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T12:14:09.487Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T12:14:09.515Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T12:14:09.546Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T12:14:09.612Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T12:14:11.488Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T12:20:09.804Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T12:20:09.815Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T12:20:09.822Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T12:20:09.831Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T12:20:09.855Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T12:20:12.321Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T12:47:41.370Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T12:47:41.379Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T12:47:41.383Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T12:47:41.389Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T12:47:41.402Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T12:47:44.687Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T12:49:02.350Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T12:51:11.499Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T12:51:11.508Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T12:51:11.514Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T12:51:11.521Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T12:51:11.536Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T12:51:14.179Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T12:53:00.706Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T12:53:00.718Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T12:53:00.723Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T12:53:00.732Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T12:53:00.751Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T12:53:02.162Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T12:53:09.115Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:42:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-10T12:53:32.913Z"}
+{"level":"error","message":"Error: Cannot destructure property 'name' of 'req.body' as it is undefined.","service":"user-service","stack":"TypeError: Cannot destructure property 'name' of 'req.body' as it is undefined.\n    at register (/home/app/src/controllers/auth.controller.ts:39:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at next (/home/app/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/home/app/node_modules/router/lib/route.js:117:3)\n    at handle (/home/app/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at /home/app/node_modules/router/index.js:295:15\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at Function.handle (/home/app/node_modules/router/index.js:186:3)","timestamp":"2026-06-10T13:02:39.988Z"}
+{"level":"error","message":"Error: Cannot destructure property 'name' of 'req.body' as it is undefined.","service":"user-service","stack":"TypeError: Cannot destructure property 'name' of 'req.body' as it is undefined.\n    at register (/home/app/src/controllers/auth.controller.ts:39:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at next (/home/app/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/home/app/node_modules/router/lib/route.js:117:3)\n    at handle (/home/app/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at /home/app/node_modules/router/index.js:295:15\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at Function.handle (/home/app/node_modules/router/index.js:186:3)","timestamp":"2026-06-10T13:03:07.823Z"}
+{"level":"error","message":"Error: Cannot destructure property 'name' of 'req.body' as it is undefined.","service":"user-service","stack":"TypeError: Cannot destructure property 'name' of 'req.body' as it is undefined.\n    at register (/home/app/src/controllers/auth.controller.ts:39:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at next (/home/app/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/home/app/node_modules/router/lib/route.js:117:3)\n    at handle (/home/app/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at /home/app/node_modules/router/index.js:295:15\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at Function.handle (/home/app/node_modules/router/index.js:186:3)","timestamp":"2026-06-10T13:03:14.327Z"}
+{"level":"error","message":"Error: Invalid Input","service":"user-service","stack":"Error: Invalid Input\n    at register (/home/app/src/controllers/auth.controller.ts:37:20)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at next (/home/app/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/home/app/node_modules/router/lib/route.js:117:3)\n    at handle (/home/app/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at /home/app/node_modules/router/index.js:295:15\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at Function.handle (/home/app/node_modules/router/index.js:186:3)","timestamp":"2026-06-10T13:03:33.000Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T13:04:10.179Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T13:11:52.871Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T13:11:52.880Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T13:11:52.886Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T13:11:52.893Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T13:11:52.901Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T13:11:54.634Z"}
+{"level":"error","message":"Error: Invalid Input","service":"user-service","stack":"Error: Invalid Input\n    at register (/home/app/src/controllers/auth.controller.ts:37:20)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at next (/home/app/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/home/app/node_modules/router/lib/route.js:117:3)\n    at handle (/home/app/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at /home/app/node_modules/router/index.js:295:15\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at Function.handle (/home/app/node_modules/router/index.js:186:3)","timestamp":"2026-06-10T13:13:33.976Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T13:13:43.179Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T21:45:43.990Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T23:23:59.450Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T23:23:59.467Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T23:23:59.471Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T23:23:59.497Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T23:23:59.517Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T23:24:00.639Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T23:24:47.877Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T23:27:32.696Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T23:27:32.706Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T23:27:32.713Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T23:27:32.720Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T23:27:32.732Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T23:27:33.758Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T23:27:48.849Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T23:28:35.452Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T23:31:01.161Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T23:31:01.168Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T23:31:01.172Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T23:31:01.177Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T23:31:01.186Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T23:31:02.414Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T23:31:24.054Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T23:33:34.218Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T23:33:34.229Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T23:33:34.233Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T23:33:34.237Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T23:33:34.246Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T23:33:35.225Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-10T23:48:33.220Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-10T23:48:33.233Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-10T23:48:33.239Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-10T23:48:33.245Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-10T23:48:33.266Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-10T23:48:34.323Z"}
+{"level":"info","message":"🔌 [AMQP] Successfully connected to RabbitMQ broker.","service":"user-service","timestamp":"2026-06-10T23:48:43.055Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-11T00:22:08.695Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-11T00:22:08.718Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-11T00:22:08.724Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-11T00:22:08.737Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-11T00:22:08.766Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-11T00:22:09.912Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-11T14:49:53.399Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-11T14:49:53.416Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-11T14:49:53.426Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-11T14:49:53.439Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-11T14:49:53.467Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-11T14:49:56.381Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-11T15:05:55.829Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-11T15:05:55.842Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-11T15:05:55.848Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-11T15:05:55.868Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-11T15:05:55.888Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-11T15:05:58.899Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-11T15:18:05.397Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-11T15:18:05.408Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-11T15:18:05.415Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-11T15:18:05.425Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-11T15:18:05.446Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-11T15:18:07.679Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:74:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-11T15:44:29.819Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:74:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-11T15:45:10.186Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:74:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-11T15:45:14.410Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:74:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-11T15:45:53.586Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-11T15:47:14.817Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-11T15:47:14.827Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-11T15:47:14.830Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-11T15:47:14.838Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-11T15:47:14.844Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-11T15:47:31.347Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:74:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-11T15:47:47.202Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-13T01:32:34.581Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-13T01:32:34.596Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-13T01:32:34.603Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-13T01:32:34.625Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-13T01:32:34.639Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-13T01:32:35.841Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:75:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-13T01:38:28.934Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:75:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-13T01:41:46.362Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at register (/home/app/src/controllers/auth.controller.ts:75:27)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2026-06-13T01:42:29.757Z"}

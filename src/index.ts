@@ -16,6 +16,7 @@ import authMiddleware from "./middlewares/auth";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import logger from "./utils/winston";
+import { amqpManager } from "./config/amqp";
 
 process.on("unhandledRejection", (reason, promise) => {
   logger.error("Unhandled Rejection at:", promise, "reason:", reason);
@@ -54,7 +55,6 @@ app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
 
-
 // Automatically collect default metrics (CPU, Memory, Event Loop Lag)
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics({ register: client.register });
@@ -65,11 +65,12 @@ app.get("/metrics", async (req, res) => {
   res.end(await client.register.metrics());
 });
 
-
 const startServer = async () => {
   try {
     await initDatabase();
     await verifySTMP();
+
+    await amqpManager.getConnection();
 
     const limiter = rateLimit({
       windowMs: 1 * 60 * 1000,

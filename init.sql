@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS bookings (
 CREATE TABLE IF NOT EXISTS reviews (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     apartment_id UUID NOT NULL REFERENCES apartments(id) ON DELETE CASCADE,
+    booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
     guest_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     rating INT CHECK (rating >= 1 AND rating <= 5),
     comment TEXT,
@@ -85,6 +86,45 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Cancellation_Policy table
+CREATE TABLE IF NOT EXISTS cancellation_policies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL, -- flexible, moderate, strict
+    description TEXT,
+    refund_percentage INT CHECK (refund_percentage >= 0 AND refund_percentage <= 100),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+    amount NUMERIC(10,2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending', -- pending, paid, refunded
+    method VARCHAR(50), -- card, transfer, wallet
+    transaction_ref VARCHAR(255),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+
+CREATE TABLE IF NOT EXISTS booking_status_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+    old_status VARCHAR(50),
+    new_status VARCHAR(50),
+    changed_at TIMESTAMPTZ DEFAULT NOW(),
+    changed_by UUID REFERENCES users(id)
+);
+
+ALTER TABLE bookings
+ADD COLUMN check_in_time TIMESTAMPTZ,
+ADD COLUMN check_out_time TIMESTAMPTZ;
+
+-- Add cancellation_policy_id to bookings
+ALTER TABLE bookings
+ADD COLUMN cancellation_policy_id UUID REFERENCES cancellation_policies(id) ON DELETE SET NULL;
+
+
 
 -- Trigger function for leaderboard updates
 CREATE OR REPLACE FUNCTION update_leaderboard_after_booking() RETURNS TRIGGER AS $$

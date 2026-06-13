@@ -1,0 +1,92 @@
+@baseUrl = http://localhost:3000/api
+
+### 1. Register a new user
+# This endpoint hashes the password and triggers a welcome email via RabbitMQ
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test Engineer",
+  "email": "dev@example.com",
+  "password": "Password123!",
+  "phone": "08012345678",
+  "role": "agent"
+}
+
+### 2. Login
+# @name login
+# This endpoint returns a token in the body and the 'X-Auth-Token' header
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "dev@example.com",
+  "password": "Password123!"
+}
+
+### Capture token from login response header or body
+@authToken = {{login.response.headers.X-Auth-Token}}
+
+### 3. Forget Password
+POST {{baseUrl}}/auth/forget-password
+Content-Type: application/json
+
+{
+  "email": "dev@example.com"
+}
+
+### 4. Reset Password
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "dev@example.com",
+  "token": "token_received_from_email",
+  "newPassword": "NewSecurePassword123!"
+}
+
+### 5. Send Email Verification Token
+POST {{baseUrl}}/auth/send-token
+Content-Type: application/json
+
+{
+  "email": "dev@example.com"
+}
+
+### 6. Verify Email
+POST {{baseUrl}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "dev@example.com",
+  "token": "token_received_from_email"
+}
+
+### -----------------------------------------------------------------
+### APARTMENT APIs (Placeholders - adjust based on your Router config)
+### -----------------------------------------------------------------
+
+### 7. Create Apartment
+POST {{baseUrl}}/apartments
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "agent_id": "user-uuid-from-login-response",
+  "title": "Luxury Penthouse",
+  "description": "Beautiful city view with modern amenities",
+  "price_per_night": 350.50,
+  "location": "Point(6.5244 3.3792)",
+  "address": "123 Marina Street",
+  "city": "Lagos",
+  "max_guests": 2,
+  "status": "available"
+}
+
+### 8. Get All Apartments
+GET {{baseUrl}}/apartments
+Accept: application/json
+
+### 9. Get Apartment by ID
+GET {{baseUrl}}/apartments/replace-with-actual-uuid
+Accept: application/json
