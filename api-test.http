@@ -8,11 +8,11 @@ POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "name": "Test Engineer",
-  "email": "dev@example.com",
-  "password": "Password123!",
+  "name": "Vicman",
+  "email": "ebubechus@gmail.com",
+  "password": "test123",
   "phone": "08012345678",
-  "role": "agent" 
+  "role": "guest" 
 }
 
 ### 2. Login
@@ -22,8 +22,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "dev@example.com",
-  "password": "Password123!"
+  "email": "ebubechus@gmail.com",
+  "password": "test123"
 }
 
 ### Capture token from login response header or body
@@ -91,4 +91,13 @@ Accept: application/json
 
 ### 9. Get Apartment by ID
 GET {{baseUrl}}/apartments/replace-with-actual-uuid
+Accept: application/json
+
+### 10. Get All Users
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
+### 11. Get User by ID
+GET {{baseUrl}}/users/replace-with-actual-uuid
 Accept: application/json

@@ -1,6 +1,11 @@
 import { Pool } from "pg";
 import BaseRepository from "./BaseRepository";
-import { IUser, IUserRepository } from "./repository";
+import {
+  IUser,
+  IUserRepository,
+  IUserQueryResult,
+  IUserQuery,
+} from "./repository";
 
 export class UserRepository extends BaseRepository implements IUserRepository {
   constructor(pool: Pool) {
@@ -53,7 +58,7 @@ export class UserRepository extends BaseRepository implements IUserRepository {
       UPDATE users 
       SET ${setClause}, updated_at = NOW() 
       WHERE id = $${values.length} 
-      RETURNING id, name, email, role, phone, updated_at
+      RETURNING id, name, email, role, phone, is_verified, profile_image_url, updated_at
     `;
     const result = await this.pool.query(queryText, values);
     return result.rows[0] || null;
@@ -63,12 +68,27 @@ export class UserRepository extends BaseRepository implements IUserRepository {
     await this.pool.query("DELETE FROM users WHERE id = $1", [id]);
   }
 
-  async getAllUsers(): Promise<IUser[]> {
-    const result = await this.pool.query(
-      "SELECT * FROM users ORDER BY created_at DESC",
-    );
+  async getAllUsers(query: IUserQuery): Promise<IUserQueryResult> {
+    const limit = query.limit || this.defaultLimit;
+    const offset = query.offset || this.defaultOffset;
 
-    return result.rows;
+    const dataQuery = `
+      SELECT * FROM users 
+      ORDER BY created_at DESC 
+      LIMIT $1 OFFSET $2;
+    `;
+
+    const countQuery = "SELECT COUNT(*) FROM users;";
+
+    const [dataRes, countRes] = await Promise.all([
+      this.pool.query(dataQuery, [limit, offset]),
+      this.pool.query(countQuery),
+    ]);
+
+    return {
+      users: dataRes.rows,
+      totalCount: parseInt(countRes.rows[0].count, 10),
+    };
   }
 
   async updateImage(userId: string, imageUrl: string): Promise<IUser | null> {
@@ -83,7 +103,6 @@ export class UserRepository extends BaseRepository implements IUserRepository {
       const result = await this.pool.query(queryText, [imageUrl, userId]);
       return result.rows[0] || null;
     } catch (error) {
-      // If the column is missing in an older DB schema, attempt to add it and retry once
       const msg = (error as any)?.message || "";
       if (
         msg.includes('column "profile_image_url"') ||

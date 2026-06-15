@@ -17,6 +17,7 @@ import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import logger from "./utils/winston";
 import { amqpManager } from "./config/amqp";
+import { getAllUsers } from "./controllers/user.controller";
 
 process.on("unhandledRejection", (reason, promise) => {
   logger.error("Unhandled Rejection at:", promise, "reason:", reason);
@@ -86,7 +87,8 @@ const startServer = async () => {
     app.use(limiter);
 
     app.use("/api/auth", authRoute);
-    app.use("/api/users", authMiddleware, userRoute);
+    app.use("/api/user", authMiddleware, userRoute);
+    app.use("/api/users", authMiddleware, getAllUsers);
     app.use("/api", uploadRoute);
     app.use("/api/apartments", authMiddleware, apartmentRoute);
 

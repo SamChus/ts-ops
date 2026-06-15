@@ -1,14 +1,18 @@
 import { s3, bucketName } from "../config/aws-s3";
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import type { Request, Response } from "express";
 import AppError from "../utils/appError";
 import cloudinary from "../config/cloudinary";
-import { UserService } from "../services/userService";
+import { UserService } from "../services/user.service";
 import logger from "../utils/winston";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const REGION = process.env.AWS_REGION || "us-east-1"; 
+const REGION = process.env.AWS_REGION || "us-east-1";
 
 const uploadProfileImage = async (req: Request, res: Response) => {
   try {
@@ -45,23 +49,21 @@ const uploadProfileImage = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
 const uploadToS3 = async (
   files: any[],
   bucketName: string,
   folder: string,
 ): Promise<string[]> => {
-  const s3Client = new S3Client({ region: process.env.AWS_REGION || "us-east-1"});
+  const s3Client = new S3Client({
+    region: process.env.AWS_REGION || "us-east-1",
+  });
   try {
-
     // Map through files and upload each one to S3
     const uploadPromises = files.map((file) => {
       const s3Key = `${folder}/${Date.now()}-${file.originalname}`;
 
       const command = new PutObjectCommand({
-        Bucket: bucketName                                                                                                                                                                                     ,
+        Bucket: bucketName,
         Key: s3Key,
         Body: file.buffer, // Multer memoryStorage provides this buffer
         ContentType: file.mimetype,
@@ -81,13 +83,12 @@ const uploadToS3 = async (
   }
 };
 
-const generatePresignedUrl = async (filename:string, bucketName: string) => {
-  
+const generatePresignedUrl = async (filename: string, bucketName: string) => {
   try {
-  const command = new GetObjectCommand({
-    Bucket: bucketName,
-    Key: filename,
-  });
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: filename,
+    });
     const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
     return url;
   } catch (error) {
@@ -96,4 +97,4 @@ const generatePresignedUrl = async (filename:string, bucketName: string) => {
   }
 };
 
-export { uploadProfileImage , uploadToS3, generatePresignedUrl};
+export { uploadProfileImage, uploadToS3, generatePresignedUrl };

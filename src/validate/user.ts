@@ -1,18 +1,17 @@
-import { UserService } from "../services/userService";
-
+import { UserService } from "../services/user.service";
 
 export const validateUser = async (email: string) => {
-      const user = await UserService.getUserByEmail(email);
-    
-        if (!user) {
-          throw new Error("USER_NOT_FOUND");
-        }
-        return user;
-}
+  const user = await UserService.getUserByEmail(email);
+
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+  return user;
+};
 
 export const checkEmail = async (email: string) => {
-    const existingUser = await UserService.getUserByEmail(email);
-    if (existingUser) {
-      throw new Error("EMAIL_ALREADY_EXISTS");
-    }
-}
+  const existingUser = await UserService.getUserByEmail(email);
+  if (existingUser) {
+    throw new Error("EMAIL_ALREADY_EXISTS");
+  }
+};

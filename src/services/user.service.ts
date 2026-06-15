@@ -1,6 +1,6 @@
 import { pgPool, redisClient } from "../config/db";
 import { UserRepository } from "../data/repositories/UserRepository";
-import { IUser } from "../data/repositories/repository";
+import { IUser, IUserQuery, IUserQueryResult } from "../data/repositories/repository";
 import AppError from "../utils/appError";
 import logger from "../utils/winston";
 
@@ -43,9 +43,12 @@ export class UserService {
     }
   }
 
-  static async getAllUsers(): Promise<IUser[]> {
+  static async getAllUsers(limit:number, offset:number): Promise<IUserQueryResult> {
     try {
-      return await this.userRepo.getAllUsers();
+      return await this.userRepo.getAllUsers({
+        limit,
+        offset
+      });
     } catch (ex) {
       logger.error(`Error fetching users: ${ex}`);
       throw new AppError("Failed to fetch users", 500);
@@ -76,6 +79,22 @@ export class UserService {
     } catch (ex) {
       logger.error(`Error updating user image: ${ex}`);
       throw new AppError("Failed to update user image", 500);
+    }
+  }
+
+  static async getUserProfileByEmail(email: string): Promise<IUser | null> {
+    try {
+      const user = await this.userRepo.getUserByEmail(email);
+
+      if (!user) {
+        throw new AppError("User not found", 404);
+      }
+
+      return user;
+    } catch (ex) {
+      if (ex instanceof AppError) throw ex;
+      logger.error(`Error fetching user profile by email: ${ex}`);
+      throw new AppError("Failed to fetch user profile", 500);
     }
   }
 }

@@ -1,9 +1,12 @@
 import { pgPool } from "../config/db";
 import AppError from "../utils/appError";
 import logger from "../utils/winston";
-import { UserService } from "./userService";
+import { UserService } from "./user.service";
 import { ApartmentRepository } from "../data/repositories/ApartmentRepository";
-import { IApartment } from "../data/repositories/repository";
+import {
+  IApartment,
+  IApartmentQueryResult,
+} from "../data/repositories/repository";
 
 interface Apartment {
   agent_id: string;
@@ -91,8 +94,11 @@ export class ApartmentService {
     return this.apartmentRepo.getApartmentById(id);
   }
 
-  static async getAllApartments(): Promise<IApartment[]> {
-    return this.apartmentRepo.getAllApartments();
+  static async getAllApartments(
+    limit: number,
+    offset: number,
+  ): Promise<IApartmentQueryResult> {
+    return this.apartmentRepo.getAllApartments({ limit, offset });
   }
 
   static async updateApartmentStatus(

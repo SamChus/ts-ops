@@ -1,4 +1,4 @@
-import { transporter } from "../services/emailService";
+import { transporter } from "../services/email.service";
 
 export const verifySTMP = async (): Promise<void> => {
   try {

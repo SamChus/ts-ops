@@ -1,7 +1,8 @@
 import express from "express";
 import { Request, Response, NextFunction } from "express";
-import { UserService } from "../services/userService";
+import { UserService } from "../services/user.service";
 import AppError from "../utils/appError";
+import { getPaginationParameters } from "../utils/pagination";
 
 export const getUserProfile = async (
   req: Request,
@@ -53,10 +54,19 @@ export const getAllUsers = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const users = await UserService.getAllUsers();
+  const { page, perPage, limit, offset } = getPaginationParameters(req);
+  const {users, totalCount} = await UserService.getAllUsers(limit, offset);
   const safeUsers = users.map(({ password, ...rest }) => rest);
   res
     .status(200)
-    .json({ message: "Users retrieved successfully", data: safeUsers });
+    .json({ 
+      message: "Users retrieved successfully", 
+      data: safeUsers,
+      pagination: {
+        page,
+        perPage,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / perPage),
+      }
+    });
 };
-

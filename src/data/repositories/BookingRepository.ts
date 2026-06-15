@@ -11,21 +11,45 @@ export class BookingRepository
   }
 
   async createBooking(booking: IBooking): Promise<IBooking> {
-    const queryText = `
-      INSERT INTO bookings (guest_id, apartment_id, check_in, check_out, total_price, status) 
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *
-    `;
-    const values = [
-      booking.guest_id,
-      booking.apartment_id,
-      booking.check_in,
-      booking.check_out,
-      booking.total_price,
-      booking.status || "pending",
-    ];
-    const result = await this.pool.query(queryText, values);
-    return result.rows[0];
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      // 1. Insert the booking
+      const insertBookingQuery = `
+        INSERT INTO bookings (guest_id, apartment_id, check_in, check_out, total_price, status) 
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING *
+      `;
+      const bookingValues = [
+        booking.guest_id,
+        booking.apartment_id,
+        booking.check_in,
+        booking.check_out,
+        booking.total_price,
+        booking.status || "pending",
+      ];
+      const bookingResult = await client.query(
+        insertBookingQuery,
+        bookingValues,
+      );
+
+      // 2. Update the apartment status to 'booked' or 'reserved'
+      const updateApartmentQuery = `
+        UPDATE apartments 
+        SET status = 'reserved' 
+        WHERE id = $1
+      `;
+      await client.query(updateApartmentQuery, [booking.apartment_id]);
+
+      await client.query("COMMIT");
+      return bookingResult.rows[0];
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async getBookingById(id: string): Promise<IBooking | null> {
@@ -35,35 +59,6 @@ export class BookingRepository
     );
     return result.rows[0] || null;
   }
-
-  async updateBooking(
-    id: string,
-    booking: Partial<IBooking>,
-  ): Promise<IBooking | null> {
-    const fields = Object.keys(booking);
-    if (fields.length === 0) return null;
-    const setClause = fields
-      .map((key, index) => `${key} = $${index + 1}`)
-      .join(", ");
-    const values = [...Object.values(booking), id];
-    const queryText = `
-      UPDATE bookings 
-      SET ${setClause}, updated_at = NOW() 
-      WHERE id = $${values.length} 
-      RETURNING *
-    `;
-    const result = await this.pool.query(queryText, values);
-    return result.rows[0] || null;
-  }
-
-  async deleteBooking(id: string): Promise<IBooking> {
-    const result = await this.pool.query(
-      "DELETE FROM bookings WHERE id = $1 RETURNING *",
-      [id],
-    );
-    return result.rows[0];
-  }
-
 
   async updateBookingStatus(
     id: string,
@@ -100,30 +95,21 @@ export class BookingRepository
 
   async getBookingsByUser(userId: string): Promise<IBooking[]> {
     const result = await this.pool.query(
-      "SELECT * FROM bookings WHERE user_id = $1 ORDER BY created_at DESC",
+      "SELECT * FROM bookings WHERE guest_id = $1 ORDER BY created_at DESC",
       [userId],
     );
     return result.rows;
   }
+  
+  async updateBooking(id: string, booking: Partial<IBooking>): Promise<IBooking | null> {
+   return null
+  }
 
-  async getAllBookings(query?: IBookingQuery): Promise<IBooking[]> {
-    let queryString = "SELECT * FROM bookings ORDER BY created_at DESC";
-    const values: any[] = [];
+  async deleteBooking(id: string): Promise<IBooking> {
+    throw new Error("Method not implemented.");
+  }
 
-    if (query) {
-      queryString += " WHERE";
-      if (query) {
-        queryString += " status = $1";
-        values.push(query);
-      
-        if (query.apartment_id) {
-          queryString += " AND apartment_id = $2";
-          values.push(query.apartment_id);
-        }
-      }
-    }
-
-    const result = await this.pool.query(queryString, values);
-    return result.rows;
+  getAllBookings(query?: IBookingQuery): Promise<IBooking[]> {
+    throw new Error("Method not implemented.");
   }
 }

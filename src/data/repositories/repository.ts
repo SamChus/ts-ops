@@ -1,3 +1,10 @@
+//Auth entity
+export interface IAuthResponse {
+  user: IUser;
+  token: string;
+}
+
+
 // User entity
 export interface IUser {
   id: string;
@@ -61,7 +68,8 @@ interface IQueryParameters{
   
 }
 
-export interface IUserQuery extends IQueryParameters {}
+export interface IUserQuery extends IQueryParameters {
+}
 
 export interface IApartmentQuery extends IQueryParameters {}
 
@@ -79,6 +87,22 @@ export interface IReviewQuery extends IQueryParameters {
     rating?: number;
 }
 
+export interface IUserQueryResult {
+ users: IUser[];
+ totalCount: number;
+}
+
+export interface IApartmentQueryResult {
+ apartment: IApartment[];
+ totalCount: number;
+}
+
+export interface IBookingQueryResult {
+  bookings: IBooking[];
+  totalCount: number;
+}
+
+
 
 export interface IUserRepository {
   createUser(user: IUser): Promise<IUser>;
@@ -86,7 +110,7 @@ export interface IUserRepository {
   getUserByEmail(email: string): Promise<IUser | null>;
   updateUser(id: string, user: Partial<IUser>): Promise<IUser | null>;
   deleteUser(id: string): Promise<void>;
-  getAllUsers(query?: IUserQuery): Promise<IUser[]>;
+  getAllUsers(query: IUserQuery): Promise<IUserQueryResult>;
 }
 
 export interface IApartmentRepository {
@@ -94,7 +118,7 @@ export interface IApartmentRepository {
     getApartmentById(id: string): Promise<IApartment | null>;
     updateApartment(id: string, apartment: Partial<IApartment>): Promise<IApartment | null>;
     deleteApartment(id: string): Promise<void>;
-    getAllApartments(): Promise<IApartment[]>;
+    getAllApartments(query: IApartmentQuery): Promise<IApartmentQueryResult>;
     addImages(apartmentId: string, imageUrls: string[]): Promise<IApartment | null>;
 }
 
