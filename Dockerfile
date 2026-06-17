@@ -1,5 +1,5 @@
 # --- STEP 1: Dependencies ---
-FROM node:20-alpine AS dependencies
+FROM node:22-alpine AS dependencies
 WORKDIR /home/app
 COPY package*.json tsconfig.json ./
 # Install ALL dependencies (including typescript) so we can compile the code
@@ -34,6 +34,37 @@ EXPOSE 3000
 # CRITICAL FIX: The actual command that keeps the container alive and runs your app
 CMD ["node", "dist/index.js"]
 
+
+# FROM node:20-alpine AS base
+
+# WORKDIR /home/app
+
+# COPY package*.json *.json ./
+
+# RUN npm install
+
+
+# FROM base AS development
+
+# COPY . .
+
+# FROM base AS build
+
+# COPY . .
+
+# RUN npm run build
+
+# FROM node:20-alpine AS production
+
+# WORKDIR /home/app
+
+# COPY package*.json *.json ./
+
+# RUN npm ci --only=production
+
+# COPY --from=build /home/app/dist ./dist
+
+# EXPOSE 3000
 
 
 
