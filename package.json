@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "start": "node ./dist/index.js",
     "start:app": "tsc && node ./dist/index.js",
     "start:worker:email": "tsc && node ./dist/workers/emailWorker.js",
     "dev:app": "nodemon --watch src --ext ts --exec ts-node ./src/index.ts",
