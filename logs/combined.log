@@ -663,3 +663,9 @@
 {"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-15T09:49:20.818Z"}
 {"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-15T09:49:22.303Z"}
 {"level":"error","message":"Error: User not found","service":"user-service","stack":"Error: User not found\n    at Function.getUserProfileByEmail (/home/app/src/services/user.service.ts:90:15)\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async AuthService.login (/home/app/src/services/auth.service.ts:42:18)\n    at async login (/home/app/src/controllers/auth.controller.ts:22:27)","timestamp":"2026-06-15T09:50:40.569Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-06-15T09:51:56.740Z"}
+{"level":"info","message":"Winston PostgreSQL logging transport attached active.","service":"user-service","timestamp":"2026-06-15T09:51:56.753Z"}
+{"level":"info","message":"Database logging initialized","service":"db-service","timestamp":"2026-06-15T09:51:56.759Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-15T09:51:56.782Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-15T09:51:56.799Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-15T09:51:58.145Z"}

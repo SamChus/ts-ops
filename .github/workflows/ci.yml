@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image CI & AWS ECS Deploy
 
 on:
   push:
@@ -6,29 +6,74 @@ on:
   pull_request:
     branches: ["main"]
 
+# Crucial for OpenID Connect (OIDC) authentication
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: package-lock.json
+
       - name: Install and test
         run: |
           npm ci
           npm test
-      - uses: mr-smithers-excellent/docker-build-push@v7
-        name: Build & push Docker image
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          image: chusvybe/cozy
-          tags: v1, latest
-          registry: docker.io
-          dockerfile: Dockerfile
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }} # e.g., arn:aws:iam::885703010399:role/GitHubActionsECSRole
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: chus/ts-code
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build container and tag it with the commit hash
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          
+          # Push both specific commit and latest tags to ECR
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          
+          # Output image URI for the next ECS deployment step
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download Active Task Definition
+        run: |
+          aws ecs describe-task-definition --task-definition cozy-task --query taskDefinition > task-definition.json
+
+      - name: Update Task Definition with New Image
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: cozy-container # Must match the exact container name inside your AWS Task Definition
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS Task Definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: cozy-service # Your ECS Service name
+          cluster: cozy-cluster # Your ECS Cluster name
+          wait-for-service-stability: true
