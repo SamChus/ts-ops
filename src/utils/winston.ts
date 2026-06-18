@@ -1,6 +1,5 @@
 import winston from "winston";
 
-
 //@ts-ignore
 import PostgresTransport from "winston-postgres-transport";
 import dotenv from "dotenv";
@@ -34,10 +33,11 @@ export const logger = winston.createLogger({
 // 2. Function to safely attach Postgres AFTER tables are verified
 export const connectDbLogging = () => {
   const dbTransport = new PostgresTransport({
-    postgresUrl: process.env.DB_URL,
+    // FIXED: Changed from 'postgresUrl' to 'connectionString'
+    connectionString: process.env.DB_URL,
     tableName: "logs",
     config: {
-      ssl: "require",
+      ssl: "require", // Now this block will actually be read and forced!
     },
   });
 
@@ -47,7 +47,7 @@ export const connectDbLogging = () => {
 
   logger.add(dbTransport);
   logger.info("Winston PostgreSQL logging transport attached active.");
-  logger.info("Database logging initialized", {service: "db-service"});
+  logger.info("Database logging initialized", { service: "db-service" });
 };
 
 export default logger;
