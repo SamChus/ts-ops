@@ -669,3 +669,4 @@
 {"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-15T09:51:56.782Z"}
 {"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-15T09:51:56.799Z"}
 {"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-15T09:51:58.145Z"}
+{"level":"error","message":"Database initialization failed: The server does not support SSL connections","service":"user-service","stack":"Error: The server does not support SSL connections\n    at /home/app/node_modules/pg-pool/index.js:45:11\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async initDatabase (/home/app/src/config/db.ts:32:5)\n    at async startServer (/home/app/src/index.ts:71:5)","timestamp":"2026-06-18T22:13:19.511Z"}

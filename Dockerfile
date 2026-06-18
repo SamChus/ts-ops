@@ -5,6 +5,10 @@ COPY package*.json tsconfig.json ./
 # Install ALL dependencies (including typescript) so we can compile the code
 RUN npm ci
 
+FROM dependencies AS development
+
+COPY . .
+
 # --- STEP 2: Build Stage ---
 FROM node:20-alpine AS build
 WORKDIR /home/app

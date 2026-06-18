@@ -36,6 +36,9 @@ export const connectDbLogging = () => {
   const dbTransport = new PostgresTransport({
     postgresUrl: process.env.DB_URL,
     tableName: "logs",
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 
   dbTransport.on("error", (err: Error) => {
