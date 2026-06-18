@@ -105,7 +105,7 @@ export class ApartmentRepository
     // Assuming images are stored as a JSONB or TEXT array column in the apartments table
     const query = `
             UPDATE apartments 
-            SET images = array_cat(COALESCE(images, ARRAY[]::TEXT[]), $2)
+            SET image_urls = array_cat(COALESCE(image_urls, ARRAY[]::TEXT[]), $2)
             WHERE id = $1 
             RETURNING *;
         `;

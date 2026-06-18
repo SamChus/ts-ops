@@ -2,7 +2,11 @@ import { Pool, PoolClient } from "pg";
 import { createClient, RedisClientType } from "redis";
 import AppError from "../utils/appError";
 import logger, { connectDbLogging } from "../utils/winston";
+import path from "path"
 
+
+// Resolve the path dynamically so it works across different environments
+  const certPath = path.join(__dirname, 'global-bundle.pem');
 
 export const pgPool = new Pool({
   host: process.env.DB_HOST,
@@ -12,6 +16,9 @@ export const pgPool = new Pool({
   database: process.env.DB_NAME,
   max: 20,
   idleTimeoutMillis: 30000,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 export const redisClient: RedisClientType = createClient({
