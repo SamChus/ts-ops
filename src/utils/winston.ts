@@ -1,18 +1,16 @@
 import winston from "winston";
-
-//@ts-ignore
-import PostgresTransport from "winston-postgres-transport";
 import dotenv from "dotenv";
 
 dotenv.config();
 const { combine, timestamp, json, errors, simple } = winston.format;
 
-// 1. Core logger configured with safe transports only
+// Core logger configured with cloud-safe transports only
 export const logger = winston.createLogger({
   level: "info",
   format: combine(errors({ stack: true }), timestamp(), json()),
   defaultMeta: { service: "user-service" },
   transports: [
+    // Standard output for AWS CloudWatch to collect automatically
     new winston.transports.Console({
       format: combine(simple(), timestamp()),
     }),
@@ -30,24 +28,9 @@ export const logger = winston.createLogger({
   ],
 });
 
-// 2. Function to safely attach Postgres AFTER tables are verified
+// Stripped out DB tracking completely to ensure flawless server initialization
 export const connectDbLogging = () => {
-  const dbTransport = new PostgresTransport({
-    // FIXED: Changed from 'postgresUrl' to 'connectionString'
-    connectionString: process.env.DB_URL,
-    tableName: "logs",
-    config: {
-      ssl: "require", // Now this block will actually be read and forced!
-    },
-  });
-
-  dbTransport.on("error", (err: Error) => {
-    console.error("Winston DB Transport Error: ", err.message);
-  });
-
-  logger.add(dbTransport);
-  logger.info("Winston PostgreSQL logging transport attached active.");
-  logger.info("Database logging initialized", { service: "db-service" });
+  logger.info("Console and file logging channels initialized smoothly.");
 };
 
 export default logger;
