@@ -21,8 +21,24 @@ export const pgPool = new Pool({
   }
 });
 
-export const redisClient: RedisClientType = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+
+
+export const redisClient = createClient({
+  url:
+    process.env.REDIS_URL ||
+    `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}` ||
+    "redis://127.0.0.1:6379",
+  socket: {
+    connectTimeout: 10000, // Extend timeout threshold to 10 seconds
+    reconnectStrategy: (retries) => {
+      // Exponential backoff strategy up to a max of 3 seconds between retries
+      const delay = Math.min(retries * 100, 3000);
+      logger.info(
+        `Redis reconnection attempt #${retries}. Retrying in ${delay}ms...`,
+      );
+      return delay;
+    },
+  },
 });
 
 export const getPgClient = async (): Promise<PoolClient> => pgPool.connect();
