@@ -13,6 +13,15 @@ CREATE TABLE IF NOT EXISTS logs (
     timestamp TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Cancellation_Policy table
+CREATE TABLE IF NOT EXISTS cancellation_policies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL, -- flexible, moderate, strict
+    description TEXT,
+    refund_percentage INT CHECK (refund_percentage >= 0 AND refund_percentage <= 100),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -52,8 +61,11 @@ CREATE TABLE IF NOT EXISTS bookings (
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
     total_price NUMERIC(10, 2) NOT NULL,
+    no_of_guest INT DEFAULT 1,
     status VARCHAR(50) DEFAULT 'pending',
+    cancellation_policy_id UUID REFERENCES cancellation_policies(id) ON DELETE SET NULL
     created_at TIMESTAMPTZ DEFAULT NOW()
+
 );
 
 -- Reviews table
@@ -87,14 +99,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Cancellation_Policy table
-CREATE TABLE IF NOT EXISTS cancellation_policies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(100) NOT NULL, -- flexible, moderate, strict
-    description TEXT,
-    refund_percentage INT CHECK (refund_percentage >= 0 AND refund_percentage <= 100),
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
+
 
 CREATE TABLE IF NOT EXISTS payments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -116,13 +121,6 @@ CREATE TABLE IF NOT EXISTS booking_status_history (
     changed_by UUID REFERENCES users(id)
 );
 
-ALTER TABLE bookings
-ADD COLUMN check_in_time TIMESTAMPTZ,
-ADD COLUMN check_out_time TIMESTAMPTZ;
-
--- Add cancellation_policy_id to bookings
-ALTER TABLE bookings
-ADD COLUMN cancellation_policy_id UUID REFERENCES cancellation_policies(id) ON DELETE SET NULL;
 
 
 
@@ -171,4 +169,7 @@ CREATE TRIGGER trg_update_leaderboard_after_booking
 AFTER UPDATE OF status ON bookings
 FOR EACH ROW
 EXECUTE FUNCTION update_leaderboard_after_booking();
+ALTER TABLE bookings
+ADD COLUMN guest_count INT DEFAULT 1;
+ADD COLUMN cancellation_policy_id UUID REFERENCES cancellation_policies(id) ON DELETE SET NULL;
 

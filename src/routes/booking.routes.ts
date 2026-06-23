@@ -1,12 +1,11 @@
 import { Router } from "express";
+import { createBooking } from "../controllers/booking.controller";
 
 
 const route = Router()
 
 
-route.post('/bookings', (req, res) => {
-    res.json({ message: 'Booking created' });
-});
+route.post('/:id', createBooking);
 
 route.get('/bookings/:id/', (req, res) => {
     res.json({ message: `Details of booking ${req.params.id}` });

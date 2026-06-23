@@ -1,6 +1,7 @@
 import logger from "../utils/winston";
 import { amqpManager } from "../config/amqp";
 import { sendEmail } from "../services/email.service";
+import { generateEmailTemplate } from "../utils/emailTemplate";
 
 async function startEmailWorker() {
   console.log("🤖 Starting Email Worker initialization...");
@@ -44,6 +45,16 @@ async function startEmailWorker() {
           break;
 
         case "LOGIN_DETECTED":
+          sendEmail(
+            recipient,
+            `LOGIN DETECTED`,
+            `Hi ${metadata.name},\n\nThank you for registering on our Mini AirBNB application! We are thrilled to have you here.\n\nBest regards,\nThe Team.`,
+            generateEmailTemplate(
+              "Login Dectected",
+              `⚠️ [SECURITY] Alerting ${recipient} of a new login from device: ${metadata.device} (IP: ${metadata.ip})`,
+              "Click Here, If Not You!!",
+            ),
+          );
           logger.info(
             `⚠️ [SECURITY] Alerting ${recipient} of a new login from device: ${metadata.device} (IP: ${metadata.ip})`,
           );

@@ -8,8 +8,8 @@ POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "name": "Vicman",
-  "email": "ebubechus@gmail.com",
+  "name": "Samuel Chukwuma",
+  "email": "chus7672@gmail.com",
   "password": "test123",
   "phone": "08012345678",
   "role": "guest" 
@@ -22,7 +22,7 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "ebubechus@gmail.com",
+  "email": "chus7672@gmail.com",
   "password": "test123"
 }
 

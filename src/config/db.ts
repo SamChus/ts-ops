@@ -16,9 +16,6 @@ export const pgPool = new Pool({
   database: process.env.DB_NAME,
   max: 20,
   idleTimeoutMillis: 30000,
-  ssl: {
-    rejectUnauthorized: false
-  }
 });
 
 
@@ -49,15 +46,6 @@ export async function initDatabase() {
     logger.info("PostgreSQL connection pool initialized");
 
     connectDbLogging();
-
-    // Optional: run lightweight ALTERs for backward compatibility
-    const alterQueries = `
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_image_url VARCHAR(512);
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'guest';
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE;
-    `;
-    await pgPool.query(alterQueries);
-
     logger.info("Database verified successfully");
 
     redisClient.on("error", (err) => logger.error("Redis Client Error", err));

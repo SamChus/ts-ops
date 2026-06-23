@@ -1,9 +1,21 @@
+import { pgPool } from "../config/db";
+import { BookingRepository } from "../data/repositories/BookingRepository";
+import { IBooking } from "../data/repositories/repository";
 
 
 export class BookingService {
-    static async createBooking(userId: string, apartmentId: string, startDate: Date, endDate: Date): Promise<void> {
-        console.log(`Creating booking for user ${userId} at apartment ${apartmentId} from ${startDate} to ${endDate}`);
-        // Implement booking creation logic here
+    private static bookingRepo = new BookingRepository(pgPool)
+ 
+
+    static async createBooking(guest_id: string, apartment_id: string, check_in: Date, check_out: Date): Promise<IBooking> {
+       return await this.bookingRepo.createBooking({
+            guest_id,
+            apartment_id,
+            check_in,
+            check_out,
+            total_price: 3000,
+            status: "completed"
+        })
     }
 
     static async cancelBooking(bookingId: string): Promise<void> {
@@ -12,43 +24,35 @@ export class BookingService {
     }
 
     static async getBookingDetails(bookingId: string): Promise<any> {
-        console.log(`Getting details for booking ID: ${bookingId}`);
-        // Implement logic to retrieve booking details here
-        return {
-            bookingId,
-        }
+       return await this.bookingRepo.getBookingById(bookingId)
     }
 
-    static async getUserBookings(userId: string): Promise<any[]> {
-        console.log(`Getting bookings for user ID: ${userId}`);
-        // Implement logic to retrieve bookings for the user here
-        return [
-            {userId},
-        ]
+    static async getUserBookings(guest_id: string): Promise<any[]> {
+       return await this.bookingRepo.getBookingsByUser(guest_id)
     }
 
-    static async getApartmentBookings(apartmentId: string): Promise<any[]> {
-        console.log(`Getting bookings for apartment ID: ${apartmentId}`);
+    static async getApartmentBookings(apartment_id: string): Promise<any[]> {
+        console.log(`Getting bookings for apartment ID: ${apartment_id}`);
         // Implement logic to retrieve bookings for the apartment here
 
         return [
-            {apartmentId},
+            {apartment_id},
         ]
     }
 
-    static async updateBooking(bookingId: string, startDate: Date, endDate: Date): Promise<void> {
-        console.log(`Updating booking ID: ${bookingId} to new dates: ${startDate} - ${endDate}`);
+    static async updateBooking(bookingId: string, check_in: Date, check_out: Date): Promise<void> {
+        console.log(`Updating booking ID: ${bookingId} to new dates: ${check_in} - ${check_out}`);
         // Implement booking update logic here
     }
 
-    static async checkAvailability(apartmentId: string, startDate: Date, endDate: Date): Promise<boolean> {
-        console.log(`Checking availability for apartment ID: ${apartmentId} from ${startDate} to ${endDate}`);
+    static async checkAvailability(apartment_id: string, check_in: Date, check_out: Date): Promise<boolean> {
+        console.log(`Checking availability for apartment ID: ${apartment_id} from ${check_in} to ${check_out}`);
         // Implement logic to check apartment availability here
         return true; // Placeholder return value
     }
 
-    static async sendBookingConfirmation(userId: string, bookingId: string): Promise<void> {
-        console.log(`Sending booking confirmation for user ${userId} and booking ID: ${bookingId}`);
+    static async sendBookingConfirmation(guest_id: string, bookingId: string): Promise<void> {
+        console.log(`Sending booking confirmation for user ${guest_id} and booking ID: ${bookingId}`);
         // Implement logic to send booking confirmation here (e.g., email, SMS)
     }
     

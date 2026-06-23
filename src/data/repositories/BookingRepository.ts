@@ -15,10 +15,9 @@ export class BookingRepository
     try {
       await client.query("BEGIN");
 
-      // 1. Insert the booking
       const insertBookingQuery = `
-        INSERT INTO bookings (guest_id, apartment_id, check_in, check_out, total_price, status) 
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO bookings (guest_id, apartment_id, check_in, check_out, total_price, no_of_guest, status) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *
       `;
       const bookingValues = [
@@ -27,6 +26,7 @@ export class BookingRepository
         booking.check_in,
         booking.check_out,
         booking.total_price,
+        booking.no_of_guest,
         booking.status || "pending",
       ];
       const bookingResult = await client.query(
@@ -93,10 +93,10 @@ export class BookingRepository
     return parseInt(result.rows[0].count) === 0;
   }
 
-  async getBookingsByUser(userId: string): Promise<IBooking[]> {
+  async getBookingsByUser(guest_id: string): Promise<IBooking[]> {
     const result = await this.pool.query(
       "SELECT * FROM bookings WHERE guest_id = $1 ORDER BY created_at DESC",
-      [userId],
+      [guest_id],
     );
     return result.rows;
   }

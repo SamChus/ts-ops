@@ -38,14 +38,15 @@ export interface IApartment {
 
 // Booking entity
 export interface IBooking {
-  id: string;
+  id?: string;
   apartment_id: string;
   guest_id: string;
   check_in: Date;
   check_out: Date;
-  total_price: number;
-  status: "pending" | "completed" | "cancelled";
-  created_at: Date;
+  total_price?: number;
+  no_of_guest?: number;
+  status?: "pending" | "completed" | "cancelled";
+  created_at?: Date;
 }
 
 // Review 
