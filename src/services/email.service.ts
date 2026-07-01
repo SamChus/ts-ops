@@ -15,7 +15,11 @@ export const sendEmail = async (
   to: string,
   subject: string,
     text: string,
-    html?: string
+    html?: string,
+    attachments?: [{
+      filename: string,
+      content: Buffer
+    }]
 ): Promise<void> => {
   const mailOptions = {
     from: process.env.SMTP_USER || "test@gmail.com",
@@ -23,6 +27,7 @@ export const sendEmail = async (
     subject,
     text,
     html,
+    attachments
   };
 
   try {

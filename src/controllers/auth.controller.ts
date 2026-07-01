@@ -1,15 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
-import { UserService } from "../services/user.service";
-import bcrypt from "bcrypt";
 import { validateLogin, validateRegister } from "../validate/auth";
 import { LoginRequest, RegisterRequest } from "../types";
 import { authService } from "../services/auth.service";
 import AppError from "../utils/appError";
 import { amqpManager } from "../config/amqp";
-import { json } from "node:stream/consumers";
 import logger from "../utils/winston";
-import os from "node:os";
 import { IUser } from "../data/repositories/repository";
+import { loginAlart, welcomEmail } from "../queue/producers/alertProducer";
 
 export const login = async (
   req: Request,
@@ -23,33 +20,7 @@ export const login = async (
   res.setHeader("X-Auth-Token", token);
 
   // Dispatch login alert event to AMQP (Non-blocking)
-  (async () => {
-    try {
-      const channel = await amqpManager.createChannel();
-      const queueName = "email_queue";
-      await channel.assertQueue(queueName, { durable: true });
-
-      const userAgent = req.headers["user-agent"] || "Unknown Device";
-      const clientIp = req.ip || req.headers["x-forwarded-for"] || "127.0.0.1";
-
-      const payload = {
-        emailType: "LOGIN_DETECTED",
-        recipient: email,
-        metadata: {
-          device: userAgent,
-          ip: clientIp,
-          time: new Date().toISOString(),
-        },
-      };
-
-      channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)), {
-        persistent: true,
-      });
-      await channel.close();
-    } catch (error) {
-      logger.error("Failed to dispatch login alert event to AMQP:", error);
-    }
-  })();
+  (async () => loginAlart)()
 
   const newUser = { ...user, password: undefined };
   res.json({
@@ -76,26 +47,7 @@ export const register = async (
   } as IUser);
 
   // Dispatch welcome email via broker (Non-blocking)
-  (async () => {
-    try {
-      const channel = await amqpManager.createChannel();
-      const queueName = "email_queue";
-      await channel.assertQueue(queueName, { durable: true });
-
-      const payload = {
-        emailType: "WELCOME_EMAIL",
-        recipient: email,
-        metadata: { name, time: new Date().toISOString() },
-      };
-
-      channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)), {
-        persistent: true,
-      });
-      await channel.close();
-    } catch (ex) {
-      logger.error("Failed to dispatch message to broker queue:", ex);
-    }
-  })();
+  (async () => welcomEmail)();
 
   const newUser = { ...user, password: undefined };
   return res.json({ message: "User registered successfully", data: newUser });

@@ -1,6 +1,8 @@
 import { Pool } from "pg";
 import BaseRepository from "./BaseRepository";
-import { IBooking, IBookingQuery, IBookingRepository } from "./repository";
+import { BookingRequest, IBooking, IBookingQuery, IBookingRepository } from "./repository";
+import AppError from "../../utils/appError";
+import { redisClient } from "../../config/db";
 
 export class BookingRepository
   extends BaseRepository
@@ -10,45 +12,100 @@ export class BookingRepository
     super(pool);
   }
 
-  async createBooking(booking: IBooking): Promise<IBooking> {
+  async createPendingBooking(booking: BookingRequest): Promise<IBooking> {
     const client = await this.pool.connect();
+
+     const sortDates = [...booking.dates].sort();
+
+     const lockKey = `lock:aparmet:${booking.apartment_id}:${sortDates[0]}_to_${sortDates[sortDates.length - 1]}`;
+
+     const acquired = await redisClient.set(lockKey, "locked", {
+       NX: true,
+       PX: 10000,
+     });
+
+     if (!acquired)
+       throw new AppError(
+         "Selected dates are currently being processed by another user, Try again.",
+         400,
+       );
+
     try {
       await client.query("BEGIN");
 
+      const availablityCheckQuery = `
+        SELECT id, price_per_night 
+        FROM apartment_availability 
+        WHERE apartment_id = $1 
+        AND date = ANY($2::date[]) 
+        AND status = 'available' 
+        FOR UPDATE
+      `;
+
+      const availabilityCheck = await client.query(
+        availablityCheckQuery,
+        [booking.apartment_id, booking.dates],
+      )
+
+      if (availabilityCheck.rows.length !== booking.dates.length) {
+        throw new AppError("Selected dates are not available for booking", 400);
+      }
+
+      const totalPrice = booking.price_per_night * booking.dates.length;
+      const checkIn = sortDates[0];
+      const checkOut = sortDates[sortDates.length - 1];
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+
+
+
+
       const insertBookingQuery = `
-        INSERT INTO bookings (guest_id, apartment_id, check_in, check_out, total_price, no_of_guest, status) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO bookings (apartment_id, guest_id, check_in, check_out, total_price, no_of_guest, status, expires_at) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *
       `;
+      
       const bookingValues = [
-        booking.guest_id,
         booking.apartment_id,
-        booking.check_in,
-        booking.check_out,
-        booking.total_price,
+        booking.guest_id,
+        checkIn,
+        checkOut,
+        totalPrice,
         booking.no_of_guest,
-        booking.status || "pending",
+        "pending_payment",
+        expiresAt
       ];
+
+
       const bookingResult = await client.query(
         insertBookingQuery,
         bookingValues,
       );
 
-      // 2. Update the apartment status to 'booked' or 'reserved'
-      const updateApartmentQuery = `
-        UPDATE apartments 
-        SET status = 'reserved' 
-        WHERE id = $1
-      `;
-      await client.query(updateApartmentQuery, [booking.apartment_id]);
+      const bookingId = bookingResult.rows[0].id;
+
+      await client.query(
+        `
+          UPDATE apartment_availability
+          SET status = "pending_payment", booking_id = $1
+          WHERE apartment_id = $2 
+           AND data = ANY($3::date[])
+        `,
+        [bookingId, booking.apartment_id, booking.dates],
+      )
 
       await client.query("COMMIT");
+      
+      await redisClient.set(`booking:expiry:${bookingId}`, "pending", {
+        EX: 15 * 60, // 15 minutes in seconds
+      })
       return bookingResult.rows[0];
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
+      await redisClient.del(lockKey);
     }
   }
 
@@ -100,9 +157,12 @@ export class BookingRepository
     );
     return result.rows;
   }
-  
-  async updateBooking(id: string, booking: Partial<IBooking>): Promise<IBooking | null> {
-   return null
+
+  async updateBooking(
+    id: string,
+    booking: Partial<IBooking>,
+  ): Promise<IBooking | null> {
+    return null;
   }
 
   async deleteBooking(id: string): Promise<IBooking> {

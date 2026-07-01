@@ -53,6 +53,19 @@ CREATE TABLE IF NOT EXISTS apartments (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Availability table
+CREATE TABLE apartment_availability (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    apartment_id UUID NOT NULL REFERENCES apartments(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    status VARCHAR(50) DEFAULT 'available', -- available, pending_payment, booked, blocked
+    price_per_night NUMERIC(10, 2) NOT NULL,
+    booking_id UUID REFERENCES bookings(id) ON DELETE SET NULL,
+    CONSTRAINT unique_apartment_date UNIQUE (apartment_id, date) 
+);
+
+CREATE INDEX idx_apt_date ON apartment_availability(apartment_id, date);
+
 -- Bookings table
 CREATE TABLE IF NOT EXISTS bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -62,10 +75,10 @@ CREATE TABLE IF NOT EXISTS bookings (
     check_out DATE NOT NULL,
     total_price NUMERIC(10, 2) NOT NULL,
     no_of_guest INT DEFAULT 1,
-    status VARCHAR(50) DEFAULT 'pending',
-    cancellation_policy_id UUID REFERENCES cancellation_policies(id) ON DELETE SET NULL
+    status VARCHAR(50) DEFAULT 'pending_payment',
+    cancellation_policy_id UUID REFERENCES cancellation_policies(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
-
+    expires_at TIMESTAMPTZ NOT NULL -- NOW() + 15 MINS
 );
 
 -- Reviews table
@@ -120,6 +133,8 @@ CREATE TABLE IF NOT EXISTS booking_status_history (
     changed_at TIMESTAMPTZ DEFAULT NOW(),
     changed_by UUID REFERENCES users(id)
 );
+
+
 
 
 

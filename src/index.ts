@@ -8,6 +8,8 @@ import { errorHandler } from "./middlewares/errorHandler";
 import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import bookingRoute from "./routes/booking.routes";
+import paymentRoute from "./routes/payment.route";
+
 
 import uploadRoute from "./routes/upload.routes";
 import apartmentRoute from "./routes/apartment.routes";
@@ -94,6 +96,8 @@ const startServer = async () => {
     app.use("/api", uploadRoute);
     app.use("/api/apartments", authMiddleware, apartmentRoute);
     app.use("/api/booking", authMiddleware, bookingRoute);
+    app.use("/api/payment", authMiddleware, paymentRoute);
+
 
     app.use(errorHandler);
 

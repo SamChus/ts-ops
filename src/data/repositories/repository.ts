@@ -1,3 +1,5 @@
+import { Interface } from "node:readline";
+
 //Auth entity
 export interface IAuthResponse {
   user: IUser;
@@ -41,6 +43,7 @@ export interface IBooking {
   id?: string;
   apartment_id: string;
   guest_id: string;
+  dates: string[];
   check_in: Date;
   check_out: Date;
   total_price?: number;
@@ -103,6 +106,14 @@ export interface IBookingQueryResult {
   totalCount: number;
 }
 
+export interface BookingRequest {
+  guest_id: number;
+  apartment_id: string;
+  dates: string[];
+  price_per_night: number;
+  no_of_guest: number;
+}
+
 
 
 export interface IUserRepository {
@@ -124,11 +135,12 @@ export interface IApartmentRepository {
 }
 
 export interface IBookingRepository {
-    createBooking(booking: IBooking): Promise<IBooking>;
+    // createBooking(booking: IBooking): Promise<IBooking>;
     getBookingById(id: string): Promise<IBooking | null>;
     updateBooking(id: string, booking: Partial<IBooking>): Promise<IBooking | null>;
     deleteBooking(id: string): Promise<IBooking>
     getAllBookings(query?: IBookingQuery): Promise<IBooking[]>
+    createPendingBooking(booking: BookingRequest): Promise<IBooking>;
 }
 
 export interface IReviewRepository {
