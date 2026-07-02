@@ -24,8 +24,8 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
-      - AWS_BUCKET=${AWS_BUCKET}  
-
+      - AWS_BUCKET=${AWS_BUCKET}
+      - PAYSTACK_SECRET_KEY=${PAYSTACK_SECRET_KEY}
       - AMQP_URL=amqp://rabbitmq:5672
     depends_on:
       - postgres_db
@@ -34,28 +34,29 @@ services:
     networks:
       - bknd_network
 
-  email_worker:
-    build: 
+  worker:
+    build:
       context: .
       target: development
-    container_name: email_worker
-    command: npm run dev:worker:email
+    container_name: worker
+    command: npm run dev:worker
+    restart: unless-stopped
     volumes:
       - .:/home/app:ro
       - /home/app/node_modules
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     environment:
       - AMQP_URL=${AMQP_URL}
     networks:
       - bknd_network
 
-
-  nginx_balancer:
+  nginx:
     image: nginx:alpine
-    container_name: nginx_balancer
+    container_name: nginx
     ports:
-      - "80:80"
+      - "8000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certs:/etc/nginx/certs:ro
@@ -120,47 +121,61 @@ services:
     networks:
       - bknd_network
 
-  # --- OBSERVABILITY / MONITORING STACK ---
-  loki:
-    image: grafana/loki:3.0.0
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - bknd_network # Network fixed
-
-  promtail:
-    image: grafana/promtail:3.0.0
-    volumes:
-      - ./promtail-config.yml:/etc/promtail/config.yml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-    command: -config.file=/etc/promtail/config.yml
-    depends_on:
-      - loki # Ensured loki starts first
-    networks:
-      - bknd_network # Network fixed
-
-  grafana:
-    image: grafana/grafana:11.0.0
-    ports:
-      - "4000:3000" # UI access stays on localhost:4000
+  ngrok:
+    image: ngrok/ngrok:latest
+    command:
+      - "http"
+      - "nginx:80" # Tells ngrok to tunnel straight to your api container on port 3000
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    depends_on:
-      - loki
-    networks:
-      - bknd_network # Network fixed
-    
-  prometheus:
-    image: prom/prometheus:v2.51.0
-    container_name: ts-ops-prometheus-1
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - NGROK_AUTHTOKEN=2ggZGz4OsOCqq8DDzNF9GbMJXxI_2Sbo3baJGmoGMRKVTipzW
     ports:
-      - "9090:9090" # Optional: Access the raw Prometheus UI at http://localhost:9090
+      - "4040:4040" # Opens the local ngrok web dashboard
+    depends_on:
+      - app
     networks:
       - bknd_network
+
+  # --- OBSERVABILITY / MONITORING STACK ---
+  # loki:
+  #   image: grafana/loki:3.0.0
+  #   ports:
+  #     - "3100:3100"
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   networks:
+  #     - bknd_network # Network fixed
+
+  # promtail:
+  #   image: grafana/promtail:3.0.0
+  #   volumes:
+  #     - ./promtail-config.yml:/etc/promtail/config.yml:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #   command: -config.file=/etc/promtail/config.yml
+  #   depends_on:
+  #     - loki # Ensured loki starts first
+  #   networks:
+  #     - bknd_network # Network fixed
+
+  # grafana:
+  #   image: grafana/grafana:11.0.0
+  #   ports:
+  #     - "4000:3000" # UI access stays on localhost:4000
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   depends_on:
+  #     - loki
+  #   networks:
+  #     - bknd_network # Network fixed
+
+  # prometheus:
+  #   image: prom/prometheus:v2.51.0
+  #   container_name: ts-ops-prometheus-1
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   ports:
+  #     - "9090:9090" # Optional: Access the raw Prometheus UI at http://localhost:9090
+  #   networks:
+  #     - bknd_network
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -168,6 +183,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     networks:
       - bknd_network
 

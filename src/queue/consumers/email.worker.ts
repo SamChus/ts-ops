@@ -1,12 +1,12 @@
-import logger from "../utils/winston";
-import { amqpManager } from "../config/amqp";
-import { sendEmail } from "../services/email.service";
-import { generateEmailTemplate } from "../utils/emailTemplate";
+import logger from "../../utils/winston";
+import { sendEmail } from "../../services/email.service";
+import { generateEmailTemplate } from "../../utils/emailTemplate";
+import { messageBroker } from "../messageBroker";
 
-async function startEmailWorker() {
+export async function startEmailWorker() {
   console.log("🤖 Starting Email Worker initialization...");
 
-  const channel = await amqpManager.createChannel();
+  const channel = await messageBroker.createChannel();
   const queueName = "email_queue";
 
   await channel.assertQueue(queueName, { durable: true });
@@ -66,12 +66,10 @@ async function startEmailWorker() {
       }
 
       logger.info(`Successfully dispatched ${emailType} for ${recipient}`);
-      channel.ack(msg); // Safely remove message from the broker queue
+      msg.ack();
     } catch (error) {
       logger.error("Error delivering email. Retrying...", error);
-      channel.nack(msg, false, true);
+      msg.nack(false, true);
     }
   });
 }
-
-startEmailWorker();

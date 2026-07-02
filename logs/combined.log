@@ -750,3 +750,74 @@
 {"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-06-29T03:36:28.206Z"}
 {"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-06-29T03:36:28.218Z"}
 {"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-06-29T03:36:29.496Z"}
+{"code":"ENOTFOUND","errno":-3008,"hostname":"postgres_db","level":"error","message":"Database initialization failed: getaddrinfo ENOTFOUND postgres_db","service":"user-service","stack":"Error: getaddrinfo ENOTFOUND postgres_db\n    at /home/app/node_modules/pg-pool/index.js:45:11\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async initDatabase (/home/app/src/config/db.ts:65:5)\n    at async startServer (/home/app/src/index.ts:81:5)","syscall":"getaddrinfo","timestamp":"2026-07-01T23:48:00.211Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T11:50:09.025Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T11:50:09.032Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T11:50:09.033Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T11:50:09.056Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T11:50:11.475Z"}
+{"date":"Thu Jul 02 2026 12:55:50 GMT+0100 (West Africa Standard Time)","error":{"code":"ENOTFOUND","errno":-3008,"hostname":"rabbitmq","syscall":"getaddrinfo"},"level":"error","message":"unhandledRejection: getaddrinfo ENOTFOUND rabbitmq\nError: getaddrinfo ENOTFOUND rabbitmq\n    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)","os":{"loadavg":[0,0,0],"uptime":477096.843},"process":{"argv":["C:\\Users\\HomePC\\Desktop\\devops_cc\\ts-ops\\node_modules\\ts-node\\dist\\bin.js","C:\\Users\\HomePC\\Desktop\\devops_cc\\ts-ops\\src\\worker.ts"],"cwd":"C:\\Users\\HomePC\\Desktop\\devops_cc\\ts-ops","execPath":"C:\\nvm4w\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":2529879,"external":5756150,"heapTotal":159580160,"heapUsed":154878440,"rss":210296832},"pid":8716,"uid":null,"version":"v22.20.0"},"rejection":true,"service":"user-service","stack":"Error: getaddrinfo ENOTFOUND rabbitmq\n    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)","timestamp":"2026-07-02T11:55:50.041Z","trace":[{"column":26,"file":"node:dns","function":"GetAddrInfoReqWrap.onlookupall [as oncomplete]","line":122,"method":"onlookupall [as oncomplete]","native":false}]}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:04:34.102Z"}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:04:34.104Z"}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:05:36.349Z"}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:05:36.545Z"}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:39:59.886Z"}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:39:59.886Z"}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:41:03.421Z"}
+{"level":"info","message":"Email Worker listening for authentication emails...","service":"user-service","timestamp":"2026-07-02T12:41:03.482Z"}
+{"code":"EAI_AGAIN","errno":-3001,"hostname":"postgres_db","level":"error","message":"Database initialization failed: getaddrinfo EAI_AGAIN postgres_db","service":"user-service","stack":"Error: getaddrinfo EAI_AGAIN postgres_db\n    at /home/app/node_modules/pg-pool/index.js:45:11\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async initDatabase (/home/app/src/config/db.ts:65:5)\n    at async startServer (/home/app/src/index.ts:81:5)","syscall":"getaddrinfo","timestamp":"2026-07-02T13:06:25.150Z"}
+{"code":"EAI_AGAIN","errno":-3001,"hostname":"postgres_db","level":"error","message":"Database initialization failed: getaddrinfo EAI_AGAIN postgres_db","service":"user-service","stack":"Error: getaddrinfo EAI_AGAIN postgres_db\n    at /home/app/node_modules/pg-pool/index.js:45:11\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async initDatabase (/home/app/src/config/db.ts:65:5)\n    at async startServer (/home/app/src/index.ts:81:5)","syscall":"getaddrinfo","timestamp":"2026-07-02T14:23:41.206Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T14:36:15.535Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T14:36:15.538Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T14:36:15.538Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T14:36:15.548Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T14:36:18.267Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T19:23:56.633Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T19:23:56.639Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T19:23:56.640Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T19:23:56.670Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T19:24:09.887Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T19:35:08.701Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T19:35:08.706Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T19:35:08.708Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T19:35:08.736Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T19:35:25.168Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T19:50:56.675Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T19:50:56.682Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T19:50:56.684Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T19:50:56.708Z"}
+{"address":"172.18.0.4","code":"ECONNREFUSED","errno":-111,"level":"error","message":"Failed to start server: connect ECONNREFUSED 172.18.0.4:5672","port":5672,"service":"user-service","stack":"Error: connect ECONNREFUSED 172.18.0.4:5672\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)","syscall":"connect","timestamp":"2026-07-02T19:52:55.016Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T19:56:31.123Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T19:56:31.126Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T19:56:31.128Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T19:56:31.140Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T19:56:34.364Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T20:06:26.658Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T20:06:26.670Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T20:06:26.671Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T20:06:26.689Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T20:06:28.852Z"}
+{"level":"error","message":"Error: Missing required booking details","service":"user-service","stack":"Error: Missing required booking details\n    at createBooking (/home/app/src/controllers/booking.controller.ts:9:15)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at next (/home/app/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/home/app/node_modules/router/lib/route.js:117:3)\n    at handle (/home/app/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at /home/app/node_modules/router/index.js:295:15\n    at param (/home/app/node_modules/router/index.js:600:14)\n    at param (/home/app/node_modules/router/index.js:610:14)\n    at processParams (/home/app/node_modules/router/index.js:664:3)","timestamp":"2026-07-02T20:13:15.700Z"}
+{"level":"error","message":"Error: Failed to create pending booking: invalid input syntax for type date: \"2026-07-03, 2026-07-04, 2026-07-05\"","service":"user-service","stack":"Error: Failed to create pending booking: invalid input syntax for type date: \"2026-07-03, 2026-07-04, 2026-07-05\"\n    at Function.createPendingBooking (/home/app/src/services/booking.service.ts:18:19)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async createBooking (/home/app/src/controllers/booking.controller.ts:20:23)","timestamp":"2026-07-02T20:30:26.977Z"}
+{"level":"error","message":"Error: Failed to create pending booking: Selected dates are not available for booking","service":"user-service","stack":"Error: Failed to create pending booking: Selected dates are not available for booking\n    at Function.createPendingBooking (/home/app/src/services/booking.service.ts:18:19)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async createBooking (/home/app/src/controllers/booking.controller.ts:20:23)","timestamp":"2026-07-02T20:30:51.487Z"}
+{"level":"error","message":"Error: Failed to create pending booking: column \"data\" does not exist","service":"user-service","stack":"Error: Failed to create pending booking: column \"data\" does not exist\n    at Function.createPendingBooking (/home/app/src/services/booking.service.ts:18:19)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async createBooking (/home/app/src/controllers/booking.controller.ts:20:23)","timestamp":"2026-07-02T20:44:43.060Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T20:49:37.718Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T20:49:37.727Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T20:49:37.730Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T20:49:37.752Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T20:49:40.085Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T21:05:28.867Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T21:05:28.871Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T21:05:28.873Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T21:05:28.886Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T21:05:46.217Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T21:06:57.838Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T21:06:57.843Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T21:06:57.844Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T21:06:57.858Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T21:07:01.219Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-02T21:10:41.648Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-02T21:10:41.652Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-02T21:10:41.654Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-02T21:10:41.668Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-02T21:10:45.490Z"}

@@ -52,4 +52,9 @@ export interface LeaderboardEntry {
   totalSpent: number;
 }
 
-
+// src/types/payment.types.ts
+export interface PaymentConfirmedMessage {
+  bookingId: string;
+  reference: string;
+  timestamp: string;
+}

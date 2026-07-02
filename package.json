@@ -7,9 +7,9 @@
     "build": "tsc",
     "start": "node ./dist/index.js",
     "start:app": "tsc && node ./dist/index.js",
-    "start:worker:email": "tsc && node ./dist/workers/emailWorker.js",
+    "start:worker": "tsc && node ./dist/worker.js",
     "dev:app": "nodemon --watch src --ext ts --exec ts-node ./src/index.ts",
-    "dev:worker:email": "nodemon --watch src --ext ts --exec ts-node ./src/workers/emailWorker.ts",
+    "dev:worker": "nodemon --watch src --ext ts --exec ts-node ./src/worker.ts",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [],

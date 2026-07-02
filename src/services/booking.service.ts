@@ -1,37 +1,22 @@
 import { pgPool, redisClient } from "../config/db";
 import { BookingRepository } from "../data/repositories/BookingRepository";
-import { IBooking } from "../data/repositories/repository";
+import { IBooking, BookingRequest } from "../data/repositories/repository";
 import AppError from "../utils/appError";
 
-interface BookingRequest {
-  guest_id: number;
-  apartment_id: string;
-  dates: string[];
-  price_per_night: number
-}
+
 
 
 export class BookingService {
     private static bookingRepo = new BookingRepository(pgPool)
  
-
-    // static async createBooking(guest_id: string, apartment_id: string, check_in: Date, check_out: Date): Promise<IBooking> {
-    //    return await this.bookingRepo.createBooking({
-    //         guest_id,
-    //         apartment_id,
-    //         check_in,
-    //         check_out,
-    //         total_price: 3000,
-    //         status: "completed"
-    //     })
-    // }
-
     static async createPendingBooking(request: BookingRequest) {
     
-        const {apartment_id, dates, guest_id, price_per_night} = request
-
-       
-
+        try {
+            const booking = await this.bookingRepo.createPendingBooking(request);
+            return booking;
+        } catch (error: Error | any) {
+            throw new AppError(`Failed to create pending booking: ${error.message}`, 500);
+        }
     }
 
     static async cancelBooking(bookingId: string): Promise<void> {

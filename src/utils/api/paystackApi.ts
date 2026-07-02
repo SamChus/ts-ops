@@ -12,7 +12,8 @@ export interface InitializePaymentArgs {
     metadata?:{
         amount: number;
         email: string;
-        name: string
+        name: string;
+        bookingId: string
     }    
 }
 

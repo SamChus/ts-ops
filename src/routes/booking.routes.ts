@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createBooking } from "../controllers/booking.controller";
+import { createBooking, fetchBookingDetails } from "../controllers/booking.controller";
 
 
 const route = Router()
@@ -7,9 +7,7 @@ const route = Router()
 
 route.post('/:id', createBooking);
 
-route.get('/bookings/:id/', (req, res) => {
-    res.json({ message: `Details of booking ${req.params.id}` });
-});
+route.get('/:id', fetchBookingDetails);
 
 route.put('/bookings/:id', (req, res) => {
     res.json({ message: `Booking ${req.params.id} updated` });

@@ -1,13 +1,12 @@
 import amqp, { type ChannelModel, type Channel } from "amqplib";
 
-const AMQP_URL = process.env.AMQP_URL || "amqp://rabbitmq:5672";
+const AMQP_URL = process.env.AMQP_URL || "amqp://127.0.0.1:5672";
 
 class AMQPManager {
   private connection: ChannelModel | null = null;
   private connectionPromise: Promise<ChannelModel> | null = null;
 
-
-  async getConnection(retries = 8, delay = 5000): Promise<ChannelModel> {
+  async getConnection(retries = 20, delay = 3000): Promise<ChannelModel> {
     if (this.connection) return this.connection;
     if (this.connectionPromise) return this.connectionPromise;
 
@@ -27,13 +26,10 @@ class AMQPManager {
     while (attempts > 0) {
       try {
         const conn = await amqp.connect(AMQP_URL);
-        console.log("Broker connection established.");
+        console.log(`Broker connection established at ${AMQP_URL}.`);
 
         conn.on("error", (err: Error) => {
-          console.error(
-            "Connection error, clearing instance...",
-            err,
-          );
+          console.error("Connection error, clearing instance...", err);
           this.connection = null;
         });
 
@@ -46,7 +42,7 @@ class AMQPManager {
       } catch (err) {
         attempts--;
         if (attempts === 0) {
-          console.error("connection attempts exhausted.");
+          console.error("Connection attempts exhausted.");
           throw err;
         }
         console.warn(
@@ -57,6 +53,13 @@ class AMQPManager {
     }
 
     throw new Error("Could not connect to RabbitMQ");
+  }
+
+  async close(): Promise<void> {
+    if (this.connection) {
+      await this.connection.close();
+      this.connection = null;
+    }
   }
 
   /**

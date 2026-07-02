@@ -1,6 +1,11 @@
 import { Pool } from "pg";
 import BaseRepository from "./BaseRepository";
-import { BookingRequest, IBooking, IBookingQuery, IBookingRepository } from "./repository";
+import {
+  BookingRequest,
+  IBooking,
+  IBookingQuery,
+  IBookingRepository,
+} from "./repository";
 import AppError from "../../utils/appError";
 import { redisClient } from "../../config/db";
 
@@ -15,20 +20,20 @@ export class BookingRepository
   async createPendingBooking(booking: BookingRequest): Promise<IBooking> {
     const client = await this.pool.connect();
 
-     const sortDates = [...booking.dates].sort();
+    const sortDates = [...booking.dates].sort();
 
-     const lockKey = `lock:aparmet:${booking.apartment_id}:${sortDates[0]}_to_${sortDates[sortDates.length - 1]}`;
+    const lockKey = `lock:aparmet:${booking.apartment_id}:${sortDates[0]}_to_${sortDates[sortDates.length - 1]}`;
 
-     const acquired = await redisClient.set(lockKey, "locked", {
-       NX: true,
-       PX: 10000,
-     });
+    const acquired = await redisClient.set(lockKey, "locked", {
+      NX: true,
+      PX: 10000,
+    });
 
-     if (!acquired)
-       throw new AppError(
-         "Selected dates are currently being processed by another user, Try again.",
-         400,
-       );
+    if (!acquired)
+      throw new AppError(
+        "Selected dates are currently being processed by another user, Try again.",
+        400,
+      );
 
     try {
       await client.query("BEGIN");
@@ -42,10 +47,10 @@ export class BookingRepository
         FOR UPDATE
       `;
 
-      const availabilityCheck = await client.query(
-        availablityCheckQuery,
-        [booking.apartment_id, booking.dates],
-      )
+      const availabilityCheck = await client.query(availablityCheckQuery, [
+        booking.apartment_id,
+        booking.dates,
+      ]);
 
       if (availabilityCheck.rows.length !== booking.dates.length) {
         throw new AppError("Selected dates are not available for booking", 400);
@@ -56,15 +61,12 @@ export class BookingRepository
       const checkOut = sortDates[sortDates.length - 1];
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-
-
-
       const insertBookingQuery = `
         INSERT INTO bookings (apartment_id, guest_id, check_in, check_out, total_price, no_of_guest, status, expires_at) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *
       `;
-      
+
       const bookingValues = [
         booking.apartment_id,
         booking.guest_id,
@@ -73,9 +75,8 @@ export class BookingRepository
         totalPrice,
         booking.no_of_guest,
         "pending_payment",
-        expiresAt
+        expiresAt,
       ];
-
 
       const bookingResult = await client.query(
         insertBookingQuery,
@@ -87,18 +88,18 @@ export class BookingRepository
       await client.query(
         `
           UPDATE apartment_availability
-          SET status = "pending_payment", booking_id = $1
+          SET status = 'pending_payment', booking_id = $1
           WHERE apartment_id = $2 
-           AND data = ANY($3::date[])
+          AND date = ANY($3::date[])
         `,
         [bookingId, booking.apartment_id, booking.dates],
-      )
+      );
 
       await client.query("COMMIT");
-      
+
       await redisClient.set(`booking:expiry:${bookingId}`, "pending", {
         EX: 15 * 60, // 15 minutes in seconds
-      })
+      });
       return bookingResult.rows[0];
     } catch (error) {
       await client.query("ROLLBACK");
@@ -110,10 +111,10 @@ export class BookingRepository
   }
 
   async getBookingById(id: string): Promise<IBooking | null> {
-    const result = await this.pool.query(
-      "SELECT * FROM bookings WHERE id = $1",
-      [id],
-    );
+    await redisClient.get(`booking:${id}`);
+    const result = await this.pool.query("SELECT * FROM bookings WHERE id = $1", [
+      id,
+    ]);
     return result.rows[0] || null;
   }
 

@@ -38,6 +38,26 @@ export const redisClient = createClient({
   },
 });
 
+export const redisSubscriber = createClient({
+  url:
+    process.env.REDIS_URL ||
+    `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}` ||
+    "redis://127.0.0.1:6379",
+  socket: {
+    connectTimeout: 10000, // Extend timeout threshold to 10 seconds
+    reconnectStrategy: (retries) => {
+      // Exponential backoff strategy up to a max of 3 seconds between retries
+      const delay = Math.min(retries * 100, 3000);
+      logger.info(
+        `Redis reconnection attempt #${retries}. Retrying in ${delay}ms...`,
+      );
+      return delay;
+    },
+  },
+});
+
+
+
 export const getPgClient = async (): Promise<PoolClient> => pgPool.connect();
 
 export async function initDatabase() {
@@ -50,6 +70,8 @@ export async function initDatabase() {
 
     redisClient.on("error", (err) => logger.error("Redis Client Error", err));
     await redisClient.connect();
+    redisSubscriber.on("error", (err) => logger.error("Redis Subscriber Client Error", err));
+    await redisSubscriber.connect();
     logger.info("Redis client connected");
   } catch (error) {
     logger.error("Database initialization failed:", error);
