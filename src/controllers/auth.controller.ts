@@ -20,7 +20,7 @@ export const login = async (
   res.setHeader("X-Auth-Token", token);
 
   // Dispatch login alert event to AMQP (Non-blocking)
-  (async () => loginAlart)()
+  void loginAlart(req);
 
   const newUser = { ...user, password: undefined };
   res.json({
@@ -47,7 +47,7 @@ export const register = async (
   } as IUser);
 
   // Dispatch welcome email via broker (Non-blocking)
-  (async () => welcomEmail)();
+  void welcomEmail(req);
 
   const newUser = { ...user, password: undefined };
   return res.json({ message: "User registered successfully", data: newUser });

@@ -77,6 +77,11 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=mydb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -101,6 +106,11 @@ services:
   redis_cache:
     image: redis:7-alpine
     container_name: redis_cache
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - redis_data:/data
     ports:
@@ -127,7 +137,7 @@ services:
       - "http"
       - "nginx:80" # Tells ngrok to tunnel straight to your api container on port 3000
     environment:
-      - NGROK_AUTHTOKEN=2ggZGz4OsOCqq8DDzNF9GbMJXxI_2Sbo3baJGmoGMRKVTipzW
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     ports:
       - "4040:4040" # Opens the local ngrok web dashboard
     depends_on:

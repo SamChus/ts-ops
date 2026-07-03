@@ -94,11 +94,19 @@ export const handlePaystackWebhook = async (req: Request, res: Response): Promis
     // 2. Compute the HMAC signature using raw request body string
     // Note: Make sure express.json() parser doesn't mutate the raw string body
   
+
+
     // Inside handlePaystackWebhook controller:
     const computedHash = crypto
       .createHmac("sha512", secret)
       .update((req as any).rawBody) // Pure, untouched string bytes
       .digest("hex");
+
+      console.log("--- PAYSTACK WEBHOOK DEBUG ---");
+      console.log("Header Signature:", hash);
+      console.log("Computed Signature:", computedHash);
+      console.log("Raw Body Input:", (req as any).rawBody);
+      console.log("------------------------------");
 
     // 3. Compare them securely
     if (hash !== computedHash) {

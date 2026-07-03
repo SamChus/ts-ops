@@ -35,6 +35,16 @@ export const startInventoryConsumer = async (): Promise<void> => {
           [bookingId],
         );
 
+        // 3. Mark the apartment as booked if any availability rows were updated
+        await client.query(
+          `UPDATE apartments 
+         SET status = 'booked' 
+         WHERE id = (
+           SELECT apartment_id FROM bookings WHERE id = $1
+         )`,
+          [bookingId],
+        );
+
         await client.query("COMMIT");
 
         // Acknowledge event completion to RabbitMQ

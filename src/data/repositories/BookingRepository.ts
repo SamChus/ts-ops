@@ -52,7 +52,19 @@ export class BookingRepository
         booking.dates,
       ]);
 
+      console.log(
+        `[BookingRepository] availability check for apartment ${booking.apartment_id}: found ${availabilityCheck.rows.length} rows for ${booking.dates.length} requested dates`,
+      );
+
       if (availabilityCheck.rows.length !== booking.dates.length) {
+        console.log("[BookingRepository] availability mismatch details:", {
+          apartment_id: booking.apartment_id,
+          dates: booking.dates,
+          foundRows: availabilityCheck.rows.map((r) => ({
+            id: r.id,
+            price_per_night: r.price_per_night,
+          })),
+        });
         throw new AppError("Selected dates are not available for booking", 400);
       }
 
@@ -112,9 +124,10 @@ export class BookingRepository
 
   async getBookingById(id: string): Promise<IBooking | null> {
     await redisClient.get(`booking:${id}`);
-    const result = await this.pool.query("SELECT * FROM bookings WHERE id = $1", [
-      id,
-    ]);
+    const result = await this.pool.query(
+    "SELECT * FROM bookings WHERE id = $1 RETURNING id, apartment_id, guest_id, check_in, check_out, total_price, no_of_guest, status, expires_at",
+      [id],
+    );
     return result.rows[0] || null;
   }
 
