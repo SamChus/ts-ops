@@ -1,11 +1,6 @@
 import { ApartmentService } from "../services/apartment.service";
 import type { Request, Response, NextFunction } from "express";
 import { s3, bucketName } from "../config/aws-s3";
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
 import logger from "../utils/winston";
 import AppError from "../utils/appError";
 import { uploadToS3 } from "./upload.controller";
