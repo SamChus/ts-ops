@@ -4,7 +4,6 @@ import { startInventoryConsumer } from "./queue/consumers/inventory.consumer";
 import { amqpManager } from "./config/amqp";
 
 async function bootstrap(): Promise<void> {
-  console.log("🚀 Starting background worker services...");
 
   const results = await Promise.allSettled([
     startEmailWorker(),

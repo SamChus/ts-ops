@@ -123,6 +123,7 @@ CREATE TABLE IF NOT EXISTS payments (
     status VARCHAR(50) DEFAULT 'pending', -- pending, paid, refunded
     method VARCHAR(50), -- card, transfer, wallet
     transaction_ref VARCHAR(255),
+    paystack_data JSONB,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

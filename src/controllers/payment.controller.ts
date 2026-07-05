@@ -5,6 +5,7 @@ import paystackApi, { InitializePaymentArgs, VerifyPaymentResponse } from "../ut
 import { amqpManager } from "../config/amqp";
 import { PaymentConfirmedMessage } from "../types";
 import crypto from "crypto";
+import PaymentService from "../services/payment.service";
 
 
 export const initializePayment = async (req: Request, res: Response) => {
@@ -44,6 +45,11 @@ export const verifyPayment = async (req:Request, res:Response) => {
   //Call enpoint
 
   const response:VerifyPaymentResponse | null = await paystackApi.verifyPayment(reference as string)
+
+  if (response) {
+    await PaymentService.saveVerifiedPayment(response);
+  }
+
   //response
   res.status(StatusCodes.OK).json(response)
 }
@@ -127,6 +133,23 @@ export const handlePaystackWebhook = async (req: Request, res: Response): Promis
         reference: event.data.reference,
         timestamp: new Date().toISOString(),
       };
+
+      if (bookingId) {
+        await PaymentService.saveVerifiedPayment({
+          status: true,
+          message: "Charge success verified via webhook",
+          data: {
+            reference: event.data.reference,
+            amount: event.data.amount,
+            status: event.data.status,
+            metadata: {
+              bookingId,
+              email: event.data.customer?.email,
+              name: event.data.customer?.first_name,
+            },
+          },
+        });
+      }
 
       // Push straight into RabbitMQ
       const channel = await amqpManager.createChannel();

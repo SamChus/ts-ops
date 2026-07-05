@@ -27,19 +27,22 @@ interface InitializePaymentResponse {
   };
 }
  
+export interface PaystackPaymentData {
+  reference: string;
+  amount: number;
+  status: string;
+  metadata?: {
+    amount?: number;
+    email?: string;
+    name?: string;
+    bookingId?: string;
+  };
+}
+
 export interface VerifyPaymentResponse {
   status: boolean;
   message: string;
-  data: {
-    reference: string;
-    amount: number;
-    status: string;
-    metadata?: {
-      amount: number;
-      email: string;
-      name: string;
-    };
-  };
+  data: PaystackPaymentData;
 }
 
 class PaystackApi extends BaseApi {
