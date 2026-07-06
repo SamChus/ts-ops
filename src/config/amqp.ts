@@ -6,7 +6,7 @@ class AMQPManager {
   private connection: ChannelModel | null = null;
   private connectionPromise: Promise<ChannelModel> | null = null;
 
-  async getConnection(retries = 20, delay = 3000): Promise<ChannelModel> {
+  async getConnection(retries = 10, delay = 3000): Promise<ChannelModel> {
     if (this.connection) return this.connection;
     if (this.connectionPromise) return this.connectionPromise;
 
@@ -62,10 +62,6 @@ class AMQPManager {
     }
   }
 
-  /**
-   * Opens a lightweight, transient channel on the shared connection.
-   * Callers are responsible for closing it when done.
-   */
   async createChannel(): Promise<Channel> {
     const conn = await this.getConnection();
     return conn.createChannel();

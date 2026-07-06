@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import AppError from "../utils/appError";
-import paystackApi, { InitializePaymentArgs, VerifyPaymentResponse } from "../utils/api/paystackApi";
+import paystackApi, {
+  InitializePaymentArgs,
+  VerifyPaymentResponse,
+} from "../utils/api/paystackApi";
 import { amqpManager } from "../config/amqp";
 import { PaymentConfirmedMessage } from "../types";
 import crypto from "crypto";
 import PaymentService from "../services/payment.service";
-
 
 export const initializePayment = async (req: Request, res: Response) => {
   //destructure request
@@ -31,30 +33,28 @@ export const initializePayment = async (req: Request, res: Response) => {
   //call endpoint
   const result = await paystackApi.initializePayment(paymentData);
   //response
-  res.status(StatusCodes.OK).json(result)
+  res.status(StatusCodes.OK).json(result);
 };
 
-
-export const verifyPayment = async (req:Request, res:Response) => {
+export const verifyPayment = async (req: Request, res: Response) => {
   //Get ref from query
-  const {reference} = req.query
-  
+  const { reference } = req.query;
+
   if (!reference) {
-    throw new AppError("Refrence is missing", StatusCodes.BAD_REQUEST)
+    throw new AppError("Refrence is missing", StatusCodes.BAD_REQUEST);
   }
   //Call enpoint
 
-  const response:VerifyPaymentResponse | null = await paystackApi.verifyPayment(reference as string)
+  const response: VerifyPaymentResponse | null =
+    await paystackApi.verifyPayment(reference as string);
 
   if (response) {
     await PaymentService.saveVerifiedPayment(response);
   }
 
   //response
-  res.status(StatusCodes.OK).json(response)
-}
-
-
+  res.status(StatusCodes.OK).json(response);
+};
 
 // export const handlePaymentWebhook = async (req: Request, res: Response): Promise<Response> => {
 //   const event = req.body;
@@ -76,7 +76,7 @@ export const verifyPayment = async (req:Request, res:Response) => {
 //       Buffer.from(JSON.stringify(payload)),
 //       { persistent: true }
 //     );
-    
+
 //     console.log(`[Payment Webhook] Published payment success for booking: ${bookingId}`);
 //   }
 
@@ -84,9 +84,10 @@ export const verifyPayment = async (req:Request, res:Response) => {
 //   return res.status(200).json({ processed: true });
 // };
 
-
-
-export const handlePaystackWebhook = async (req: Request, res: Response): Promise<Response> => {
+export const handlePaystackWebhook = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
   try {
     // 1. Get the signature from headers
     const hash = req.headers["x-paystack-signature"];
@@ -99,8 +100,6 @@ export const handlePaystackWebhook = async (req: Request, res: Response): Promis
 
     // 2. Compute the HMAC signature using raw request body string
     // Note: Make sure express.json() parser doesn't mutate the raw string body
-  
-
 
     // Inside handlePaystackWebhook controller:
     const computedHash = crypto
@@ -108,11 +107,11 @@ export const handlePaystackWebhook = async (req: Request, res: Response): Promis
       .update((req as any).rawBody) // Pure, untouched string bytes
       .digest("hex");
 
-      console.log("--- PAYSTACK WEBHOOK DEBUG ---");
-      console.log("Header Signature:", hash);
-      console.log("Computed Signature:", computedHash);
-      console.log("Raw Body Input:", (req as any).rawBody);
-      console.log("------------------------------");
+    console.log("--- PAYSTACK WEBHOOK DEBUG ---");
+    console.log("Header Signature:", hash);
+    console.log("Computed Signature:", computedHash);
+    console.log("Raw Body Input:", (req as any).rawBody);
+    console.log("------------------------------");
 
     // 3. Compare them securely
     if (hash !== computedHash) {
@@ -166,7 +165,7 @@ export const handlePaystackWebhook = async (req: Request, res: Response): Promis
     // 4. Always respond to Paystack with 200 OK within 2 seconds
     return res.status(200).json({ status: "success" });
   } catch (error) {
-    console.error('[Webhook Error]:', error);
-    return res.status(500).json({ error: 'Internal webhook loop failure' });
+    console.error("[Webhook Error]:", error);
+    return res.status(500).json({ error: "Internal webhook loop failure" });
   }
 };

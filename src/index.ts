@@ -15,7 +15,7 @@ import apartmentRoute from "./routes/apartment.routes";
 import { initDatabase, redisClient } from "./config/db";
 import cors from "cors";
 import { verifySTMP } from "./validate/stmp";
-import authMiddleware from "./middlewares/auth";
+import {authMiddleware, adminMiddleware } from "./middlewares/auth";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import logger from "./utils/winston";
@@ -97,7 +97,7 @@ const startServer = async () => {
 
     app.use("/api/auth", authRoute);
     app.use("/api/user", authMiddleware, userRoute);
-    app.use("/api/users", authMiddleware, getAllUsers);
+    app.use("/api/users", [authMiddleware, adminMiddleware], getAllUsers);
     app.use("/api", uploadRoute);
     app.use("/api/apartments", authMiddleware, apartmentRoute);
     app.use("/api/booking", authMiddleware, bookingRoute);

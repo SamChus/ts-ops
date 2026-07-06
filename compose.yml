@@ -63,7 +63,6 @@ services:
     depends_on:
       - app
       - pgadmin_ui
-      - redis_commander_ui
     networks:
       - bknd_network
 
@@ -115,19 +114,6 @@ services:
       - redis_data:/data
     ports:
       - "6379:6379"
-    networks:
-      - bknd_network
-
-  # --- REDIS GRAPHICAL INTERFACE ---
-  redis_commander_ui:
-    image: rediscommander/redis-commander:latest
-    container_name: redis_commander_ui
-    ports:
-      - "8081:8081"
-    environment:
-      - REDIS_HOSTS=local:redis_cache:6379
-    depends_on:
-      - redis_cache
     networks:
       - bknd_network
 
@@ -189,7 +175,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: ts-ops-rabitmq
+    container_name: ts-ops-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"

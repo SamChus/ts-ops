@@ -74,7 +74,7 @@ export async function initDatabase() {
     await redisSubscriber.connect();
     logger.info("Redis client connected");
   } catch (error) {
-    logger.error("Database initialization failed:", error);
+    // logger.error("Database initialization failed:", error);
     throw new AppError("Database initialization failed", 500);
   }
 }

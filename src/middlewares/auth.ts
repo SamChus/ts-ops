@@ -5,19 +5,22 @@ import jwt from "jsonwebtoken";
 declare global {
   namespace Express {
     interface Request {
-      user?: any;
+      user: {
+        userId: string;
+        role: string;
+      };
     }
   }
 }
 
-function authMiddleware(req: Request, res: Response, next: Function) {
+export const authMiddleware = (req: Request, res: Response, next: Function)  =>{
   const token = req.headers["x-auth-token"] as string || req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res
       .status(401)
       .json({ message: "Authorization token missing, Pls Provide token" });
-  }
 
+  }
   try {
      const decoded = jwt.verify(
        token,
@@ -39,4 +42,21 @@ function authMiddleware(req: Request, res: Response, next: Function) {
   }
 }
 
-export default authMiddleware;
+
+export const adminMiddleware = (req: Request, res: Response, next: Function) => {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({message: "Access denied. Admins only."});
+  }
+  next();
+};
+
+
+
+export const agentMiddleware = (req: Request, res: Response, next: Function) => {
+  if (!req.user || req.user.role !== "agent") {
+    return res.status(403).json(
+      {message: "Access denied. Agents only"}
+    )
+  }
+  next();
+}

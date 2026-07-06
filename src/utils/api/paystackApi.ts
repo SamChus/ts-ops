@@ -3,18 +3,16 @@ import BaseApi from "./baseApi";
 const baseUrl = process.env.PAYSTACK_BASEURL || "";
 const secretKey = process.env.PAYSTACK_SECRET_KEY || "";
 
-
-
 export interface InitializePaymentArgs {
-    email: string;
+  email: string;
+  amount: number;
+  callback_url?: string;
+  metadata?: {
     amount: number;
-    callback_url?: string;
-    metadata?:{
-        amount: number;
-        email: string;
-        name: string;
-        bookingId: string
-    }    
+    email: string;
+    name: string;
+    bookingId: string;
+  };
 }
 
 interface InitializePaymentResponse {
@@ -26,7 +24,7 @@ interface InitializePaymentResponse {
     reference: string;
   };
 }
- 
+
 export interface PaystackPaymentData {
   reference: string;
   amount: number;
@@ -63,15 +61,19 @@ class PaystackApi extends BaseApi {
     );
   }
 
-  async verifyPayment(reference:string) {
-    return this.get<VerifyPaymentResponse>(`/transaction/verify/${reference}`, undefined, {
-      headers: {
-        Authorization: `Bearer ${secretKey}`,
+  async verifyPayment(reference: string) {
+    return this.get<VerifyPaymentResponse>(
+      `/transaction/verify/${reference}`,
+      undefined,
+      {
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+        },
       },
-    });
+    );
   }
 }
 
-const paystackApi = new PaystackApi()
+const paystackApi = new PaystackApi();
 
 export default paystackApi;

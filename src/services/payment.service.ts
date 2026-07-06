@@ -1,7 +1,9 @@
-
 import { pgPool } from "../config/db";
 import AppError from "../utils/appError";
-import type { PaystackPaymentData, VerifyPaymentResponse } from "../utils/api/paystackApi";
+import type {
+  PaystackPaymentData,
+  VerifyPaymentResponse,
+} from "../utils/api/paystackApi";
 
 export interface PaystackVerifiedPayload {
   status?: boolean;
@@ -14,7 +16,8 @@ export const buildPaymentRecordFromPaystack = (
 ) => {
   const paymentData = verificationResponse.data;
   const normalizedAmount = Number(paymentData.amount) / 100;
-  const normalizedStatus = paymentData.status === "success" ? "paid" : "pending";
+  const normalizedStatus =
+    paymentData.status === "success" ? "paid" : "pending";
 
   return {
     bookingId: paymentData.metadata?.bookingId,
@@ -32,12 +35,20 @@ export class PaymentService {
   }
 
   static async validatePaymentDetails(paymentDetails: any): Promise<boolean> {
-    console.log(`Validating payment details: ${JSON.stringify(paymentDetails)}`);
+    console.log(
+      `Validating payment details: ${JSON.stringify(paymentDetails)}`,
+    );
     return true;
   }
 
-  static async savePaymentRecord(userId: string, amount: number, status: string): Promise<void> {
-    console.log(`Saving payment record for user ${userId} with amount $${amount} and status ${status}`);
+  static async savePaymentRecord(
+    userId: string,
+    amount: number,
+    status: string,
+  ): Promise<void> {
+    console.log(
+      `Saving payment record for user ${userId} with amount $${amount} and status ${status}`,
+    );
   }
 
   static async saveVerifiedPayment(
@@ -46,14 +57,19 @@ export class PaymentService {
     const paymentRecord = buildPaymentRecordFromPaystack(verificationResponse);
 
     if (!paymentRecord.bookingId) {
-      throw new AppError("Booking ID is missing from verified payment data", 400);
+      throw new AppError(
+        "Booking ID is missing from verified payment data",
+        400,
+      );
     }
 
     const client = await pgPool.connect();
 
     try {
       await client.query("BEGIN");
-      await client.query("ALTER TABLE payments ADD COLUMN IF NOT EXISTS paystack_data JSONB");
+      await client.query(
+        "ALTER TABLE payments ADD COLUMN IF NOT EXISTS paystack_data JSONB",
+      );
 
       const existingPayment = await client.query(
         "SELECT id FROM payments WHERE transaction_ref = $1",
@@ -70,7 +86,8 @@ export class PaymentService {
         [paymentRecord.bookingId],
       );
       const previousStatus = bookingResult.rows[0]?.status ?? null;
-      const bookingStatus = paymentRecord.status === "paid" ? "confirmed" : "pending_payment";
+      const bookingStatus =
+        paymentRecord.status === "paid" ? "confirmed" : "pending_payment";
 
       const paymentResult = await client.query(
         `INSERT INTO payments (booking_id, amount, status, method, transaction_ref, paystack_data)
