@@ -864,3 +864,63 @@
 {"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-03T04:08:00.773Z"}
 {"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-03T04:08:00.787Z"}
 {"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-03T04:08:01.854Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-06T23:34:35.017Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-06T23:34:35.032Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-06T23:34:35.035Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-06T23:34:35.079Z"}
+{"code":"ENOTFOUND","errno":-3008,"hostname":"rabbitmq","level":"error","message":"Failed to start server: getaddrinfo ENOTFOUND rabbitmq","service":"user-service","stack":"Error: getaddrinfo ENOTFOUND rabbitmq\n    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)","syscall":"getaddrinfo","timestamp":"2026-07-06T23:35:44.863Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-06T23:43:08.141Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-06T23:43:08.145Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-06T23:43:08.146Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-06T23:43:08.156Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-06T23:43:09.430Z"}
+{"level":"error","message":"Error: User not found","service":"user-service","stack":"Error: User not found\n    at Function.getUserProfileByEmail (/home/app/src/services/user.service.ts:90:15)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async AuthService.login (/home/app/src/services/auth.service.ts:40:18)\n    at async login (/home/app/src/controllers/auth.controller.ts:19:27)","timestamp":"2026-07-06T23:45:38.209Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-06T23:55:02.408Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-06T23:55:02.410Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-06T23:55:02.412Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-06T23:55:02.421Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-06T23:55:03.451Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-06T23:56:17.100Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-06T23:56:17.104Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-06T23:56:17.105Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-06T23:56:17.113Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-06T23:56:18.001Z"}
+{"level":"error","message":"Error: jwt expired","service":"user-service","stack":"TokenExpiredError: jwt expired\n    at /home/app/node_modules/jsonwebtoken/verify.js:190:21\n    at getSecret (/home/app/node_modules/jsonwebtoken/verify.js:97:14)\n    at Object.module.exports [as verify] (/home/app/node_modules/jsonwebtoken/verify.js:101:10)\n    at authMiddleware (/home/app/src/middlewares/auth.ts:25:23)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/home/app/node_modules/router/index.js:342:13)\n    at /home/app/node_modules/router/index.js:297:9\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at /home/app/node_modules/express-rate-limit/dist/index.cjs:999:7","timestamp":"2026-07-06T23:56:27.761Z"}
+{"level":"error","message":"Error: jwt expired","service":"user-service","stack":"TokenExpiredError: jwt expired\n    at /home/app/node_modules/jsonwebtoken/verify.js:190:21\n    at getSecret (/home/app/node_modules/jsonwebtoken/verify.js:97:14)\n    at Object.module.exports [as verify] (/home/app/node_modules/jsonwebtoken/verify.js:101:10)\n    at authMiddleware (/home/app/src/middlewares/auth.ts:25:23)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/home/app/node_modules/router/index.js:342:13)\n    at /home/app/node_modules/router/index.js:297:9\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at /home/app/node_modules/express-rate-limit/dist/index.cjs:999:7","timestamp":"2026-07-06T23:57:09.458Z"}
+{"level":"error","message":"Error: jwt expired","service":"user-service","stack":"TokenExpiredError: jwt expired\n    at /home/app/node_modules/jsonwebtoken/verify.js:190:21\n    at getSecret (/home/app/node_modules/jsonwebtoken/verify.js:97:14)\n    at Object.module.exports [as verify] (/home/app/node_modules/jsonwebtoken/verify.js:101:10)\n    at authMiddleware (/home/app/src/middlewares/auth.ts:25:23)\n    at Layer.handleRequest (/home/app/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/home/app/node_modules/router/index.js:342:13)\n    at /home/app/node_modules/router/index.js:297:9\n    at processParams (/home/app/node_modules/router/index.js:582:12)\n    at next (/home/app/node_modules/router/index.js:291:5)\n    at /home/app/node_modules/express-rate-limit/dist/index.cjs:999:7","timestamp":"2026-07-06T23:57:14.201Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-07T00:00:35.658Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-07T00:00:35.662Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T00:00:35.663Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T00:00:35.676Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-07T00:00:36.645Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-07T00:09:59.061Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-07T00:09:59.065Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T00:09:59.067Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T00:09:59.079Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-07T00:10:00.375Z"}
+{"level":"error","message":"Error: Email already registered","service":"user-service","stack":"Error: Email already registered\n    at AuthService.register (/home/app/src/services/auth.service.ts:22:32)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async register (/home/app/src/controllers/auth.controller.ts:41:16)","timestamp":"2026-07-07T00:11:10.852Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-07T00:29:27.083Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-07T00:29:27.087Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T00:29:27.089Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T00:29:27.109Z"}
+{"address":"172.18.0.2","code":"ECONNREFUSED","errno":-111,"level":"error","message":"Failed to start server: connect ECONNREFUSED 172.18.0.2:5672","port":5672,"service":"user-service","stack":"Error: connect ECONNREFUSED 172.18.0.2:5672\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1638:16)","syscall":"connect","timestamp":"2026-07-07T00:30:22.310Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-07T00:38:12.438Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-07T00:38:12.441Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T00:38:12.442Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T00:38:12.451Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-07T00:38:13.529Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-07T00:43:36.646Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-07T00:43:36.649Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T00:43:36.650Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T00:43:36.666Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-07T00:43:37.665Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-07T00:53:53.151Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-07T00:53:53.155Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T00:53:53.157Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T00:53:53.172Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-07T00:53:54.768Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-07T01:00:06.470Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-07T01:00:06.475Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T01:00:06.476Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T01:00:06.494Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-07T01:00:07.518Z"}

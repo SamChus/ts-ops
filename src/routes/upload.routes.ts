@@ -4,7 +4,7 @@ import type { Request, Response, NextFunction } from "express";
 import {
   uploadProfileImage,
 } from "../controllers/upload.controller";
-import authMiddleware from "../middlewares/auth";
+import {authMiddleware} from "../middlewares/auth";
 import { uploadApartmentImage } from "../controllers/apartment.controller";
 
 const router = Router();

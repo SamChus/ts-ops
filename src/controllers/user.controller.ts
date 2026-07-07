@@ -32,7 +32,7 @@ export const editUserProfile = async (
   }
 
   try {
-    const user = await UserService.updateProfile(fieldsToUpdate, userId);
+    const user = await UserService.updateProfile(userId, fieldsToUpdate);
     if (!user) {
       throw new AppError("User not found", 404);
     }

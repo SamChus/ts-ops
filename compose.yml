@@ -10,6 +10,7 @@ services:
       - .:/home/app
       - /home/app/node_modules
     environment:
+      - TZ=${TZ:-UTC}
       - NODE_ENV=${NODE_ENV}
       - PORT=${PORT}
       - DB_HOST=${DB_HOST}
@@ -19,6 +20,7 @@ services:
       - DB_NAME=${DB_NAME}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - JWT_SECRET=${JWT_SECRET}
       - INSTANCE=server_1
       # --- AWS ENV VARS ---
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
@@ -48,6 +50,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
+      - TZ=${TZ:-UTC}
       - AMQP_URL=${AMQP_URL}
     networks:
       - bknd_network
@@ -73,6 +76,8 @@ services:
     ports:
       - "5432:5432"
     environment:
+      - TZ=${TZ:-UTC}
+      - PGTZ=${TZ:-UTC}
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=mydb
@@ -116,7 +121,6 @@ services:
       - "6379:6379"
     networks:
       - bknd_network
-
   ngrok:
     image: ngrok/ngrok:latest
     command:
@@ -175,7 +179,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: ts-ops-rabbitmq
+    container_name: ts-ops-rabitmq
     ports:
       - "5672:5672"
       - "15672:15672"

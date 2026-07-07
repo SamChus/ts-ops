@@ -3,4 +3,7 @@ node_modules
 dist
 .env
 Dockerfile.dev
-logs
+
+logs/*log // this will ignore all log files in the logs directory
+logs 
+
