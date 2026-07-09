@@ -1,4 +1,5 @@
 import amqp, { type ChannelModel, type Channel } from "amqplib";
+import AppError from "../utils/appError";
 
 const AMQP_URL = process.env.AMQP_URL || "amqp://127.0.0.1:5672";
 
@@ -15,8 +16,9 @@ class AMQPManager {
     try {
       this.connection = await this.connectionPromise;
       return this.connection;
-    } finally {
+    } catch (ex) {
       this.connectionPromise = null;
+      throw new AppError("Failed to connect to RabbitMQ", 500);
     }
   }
 
@@ -60,6 +62,8 @@ class AMQPManager {
       await this.connection.close();
       this.connection = null;
     }
+
+    this.connectionPromise = null;
   }
 
   async createChannel(): Promise<Channel> {

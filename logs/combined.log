@@ -924,3 +924,53 @@
 {"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-07T01:00:06.476Z"}
 {"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-07T01:00:06.494Z"}
 {"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-07T01:00:07.518Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T00:06:13.224Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T00:06:13.228Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T00:06:13.229Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T00:06:13.245Z"}
+{"code":"ENOTFOUND","errno":-3008,"hostname":"rabbitmq","level":"error","message":"Failed to start server: getaddrinfo ENOTFOUND rabbitmq","service":"user-service","stack":"Error: getaddrinfo ENOTFOUND rabbitmq\n    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)","syscall":"getaddrinfo","timestamp":"2026-07-08T00:07:21.149Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T00:18:47.009Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T00:18:47.015Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T00:18:47.018Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T00:18:47.053Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-08T00:19:03.279Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T01:22:03.120Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T01:22:03.126Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T01:22:03.129Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T01:22:03.152Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-08T01:22:04.285Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T01:24:52.932Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T01:24:52.939Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T01:24:52.944Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T01:24:52.972Z"}
+{"isOperational":true,"level":"error","message":"Failed to start server: Failed to connect to RabbitMQ","service":"user-service","stack":"Error: Failed to connect to RabbitMQ\n    at AMQPManager.getConnection (/home/app/src/config/amqp.ts:21:13)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async startServer (/home/app/src/index.ts:83:5)","statusCode":500,"timestamp":"2026-07-08T01:26:03.155Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T01:36:47.595Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T01:36:47.600Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T01:36:47.608Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T01:36:47.638Z"}
+{"isOperational":true,"level":"error","message":"Failed to start server: Failed to connect to RabbitMQ","service":"user-service","stack":"Error: Failed to connect to RabbitMQ\n    at AMQPManager.getConnection (/home/app/src/config/amqp.ts:21:13)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async startServer (/home/app/src/index.ts:83:5)","statusCode":500,"timestamp":"2026-07-08T01:37:57.099Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T01:51:16.097Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T01:51:16.100Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T01:51:16.101Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T01:51:16.118Z"}
+{"isOperational":true,"level":"error","message":"Failed to start server: Failed to connect to RabbitMQ","service":"user-service","stack":"Error: Failed to connect to RabbitMQ\n    at AMQPManager.getConnection (/home/app/src/config/amqp.ts:21:13)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async startServer (/home/app/src/index.ts:83:5)","statusCode":500,"timestamp":"2026-07-08T01:52:24.298Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T01:56:00.801Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T01:56:00.816Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T01:56:00.818Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T01:56:00.860Z"}
+{"isOperational":true,"level":"error","message":"Failed to start server: Failed to connect to RabbitMQ","service":"user-service","stack":"Error: Failed to connect to RabbitMQ\n    at AMQPManager.getConnection (/home/app/src/config/amqp.ts:21:13)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async startServer (/home/app/src/index.ts:83:5)","statusCode":500,"timestamp":"2026-07-08T01:57:10.878Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T02:03:57.565Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T02:03:57.571Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T02:03:57.572Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T02:03:57.583Z"}
+{"isOperational":true,"level":"error","message":"Failed to start server: Failed to connect to RabbitMQ","service":"user-service","stack":"Error: Failed to connect to RabbitMQ\n    at AMQPManager.getConnection (/home/app/src/config/amqp.ts:21:13)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async startServer (/home/app/src/index.ts:83:5)","statusCode":500,"timestamp":"2026-07-08T02:05:06.009Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T02:18:54.157Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T02:18:54.167Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T02:18:54.173Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T02:18:54.204Z"}
+{"level":"info","message":"This is server_1, listening on 3000","service":"user-service","timestamp":"2026-07-08T02:19:04.354Z"}
+{"level":"info","message":"PostgreSQL connection pool initialized","service":"user-service","timestamp":"2026-07-08T02:25:47.965Z"}
+{"level":"info","message":"Console and file logging channels initialized smoothly.","service":"user-service","timestamp":"2026-07-08T02:25:47.970Z"}
+{"level":"info","message":"Database verified successfully","service":"user-service","timestamp":"2026-07-08T02:25:47.974Z"}
+{"level":"info","message":"Redis client connected","service":"user-service","timestamp":"2026-07-08T02:25:47.992Z"}
+{"isOperational":true,"level":"error","message":"Failed to start server: Failed to connect to RabbitMQ","service":"user-service","stack":"Error: Failed to connect to RabbitMQ\n    at AMQPManager.getConnection (/home/app/src/config/amqp.ts:21:13)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at async startServer (/home/app/src/index.ts:83:5)","statusCode":500,"timestamp":"2026-07-08T02:26:56.300Z"}

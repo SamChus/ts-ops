@@ -179,16 +179,23 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: ts-ops-rabitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    container_name: ts-ops-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_ERLANG_COOKIE=super_secret_monolith_shared_cookie_123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    command: sh -c "chown rabbitmq:rabbitmq /var/lib/rabbitmq/.erlang.cookie &&  chmod 400 /var/lib/rabbitmq/.erlang.cookie && docker-entrypoint.sh rabbitmq-server"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 10s
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - bknd_network
 
@@ -200,4 +207,6 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  rabbitmq_data:
     driver: local

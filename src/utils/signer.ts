@@ -1,15 +1,15 @@
 import jwt from "jsonwebtoken";
-import { User } from "../types";
 import { IUser } from "../data/repositories/repository";
 
-export const getUserToken = (user: IUser) => {
-  return <string>jwt.sign(
-    { userId: user.id, role: user.role },
-    process.env.JWT_SECRET || "",
-    {
-      expiresIn: "1h",
-    },
-  );
+export const getUserToken = (user: IUser) : string => {
+  const payload = {
+    userId: user.id,
+    role: user.role,
+  };
+  const token = jwt.sign(payload, process.env.JWT_SECRET || "", {
+    expiresIn: "1h",
+  });
+  return token;
 };
 
 export const verifyUserToken = (

@@ -17,7 +17,7 @@ export const login = async (
   if (error) throw new AppError("Invalid Input", 400);
   const { email, password } = req.body as LoginRequest;
   const { user, token } = await authService.login(email, password);
-  res.setHeader("X-Auth-Token", token);
+  // res.setHeader("X-Auth-Token", token);
 
   // Dispatch login alert event to AMQP (Non-blocking)
   void loginAlart(req);
