@@ -1,74 +1,58 @@
 import amqp, { type ChannelModel, type Channel } from "amqplib";
-import AppError from "../utils/appError";
 
-const AMQP_URL = process.env.AMQP_URL || "amqp://127.0.0.1:5672";
+const AMQP_URL = process.env.AMQP_URL || "amqp://rabbitmq:5672";
+const MAX_RETRIES = 10;
+const RETRY_DELAY_MS = 3000;
 
 class AMQPManager {
   private connection: ChannelModel | null = null;
-  private connectionPromise: Promise<ChannelModel> | null = null;
 
-  async getConnection(retries = 10, delay = 3000): Promise<ChannelModel> {
+  async connect(): Promise<ChannelModel> {
     if (this.connection) return this.connection;
-    if (this.connectionPromise) return this.connectionPromise;
 
-    this.connectionPromise = this.connect(retries, delay);
-
-    try {
-      this.connection = await this.connectionPromise;
-      return this.connection;
-    } catch (ex) {
-      this.connectionPromise = null;
-      throw new AppError("Failed to connect to RabbitMQ", 500);
-    }
-  }
-
-  private async connect(retries: number, delay: number): Promise<ChannelModel> {
-    let attempts = retries;
-
-    while (attempts > 0) {
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt += 1) {
       try {
         const conn = await amqp.connect(AMQP_URL);
-        console.log(`Broker connection established at ${AMQP_URL}.`);
+        console.log(`Connected to RabbitMQ at ${AMQP_URL}`);
 
-        conn.on("error", (err: Error) => {
-          console.error("Connection error, clearing instance...", err);
+        conn.on("error", () => {
+          console.warn("RabbitMQ connection error, clearing cached connection");
           this.connection = null;
         });
 
         conn.on("close", () => {
-          console.warn("Connection closed, clearing instance...");
+          console.warn(
+            "RabbitMQ connection closed, clearing cached connection",
+          );
           this.connection = null;
         });
 
+        this.connection = conn;
         return conn;
-      } catch (err) {
-        attempts--;
-        if (attempts === 0) {
-          console.error("Connection attempts exhausted.");
-          throw err;
-        }
+      } catch (error) {
+        const left = MAX_RETRIES - attempt;
         console.warn(
-          `Connection failed. Retrying in ${delay / 1000}s... (${attempts} left)`,
+          `RabbitMQ connect failed. Retrying in ${RETRY_DELAY_MS / 1000}s... (${left} left)`,
         );
-        await new Promise<void>((resolve) => setTimeout(resolve, delay));
+        if (left === 0) {
+          throw new Error("Failed to connect to RabbitMQ after retries");
+        }
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
       }
     }
 
-    throw new Error("Could not connect to RabbitMQ");
-  }
-
-  async close(): Promise<void> {
-    if (this.connection) {
-      await this.connection.close();
-      this.connection = null;
-    }
-
-    this.connectionPromise = null;
+    throw new Error("Failed to connect to RabbitMQ");
   }
 
   async createChannel(): Promise<Channel> {
-    const conn = await this.getConnection();
+    const conn = await this.connect();
     return conn.createChannel();
+  }
+
+  async close(): Promise<void> {
+    if (!this.connection) return;
+    await this.connection.close();
+    this.connection = null;
   }
 }
 

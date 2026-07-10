@@ -15,7 +15,7 @@ import apartmentRoute from "./routes/apartment.routes";
 import { initDatabase, redisClient } from "./config/db";
 import cors from "cors";
 import { verifySTMP } from "./validate/stmp";
-import {authMiddleware, roleMiddleware,  } from "./middlewares/auth";
+import { authMiddleware, roleMiddleware } from "./middlewares/auth";
 import rateLimit from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import logger from "./utils/winston";
@@ -80,7 +80,7 @@ const startServer = async () => {
     await initDatabase();
     await verifySTMP();
 
-    await amqpManager.getConnection();
+    await amqpManager.connect();
 
     const limiter = rateLimit({
       windowMs: 1 * 60 * 1000,

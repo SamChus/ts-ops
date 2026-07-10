@@ -28,11 +28,14 @@ services:
       - AWS_REGION=${AWS_REGION}
       - AWS_BUCKET=${AWS_BUCKET}
       - PAYSTACK_SECRET_KEY=${PAYSTACK_SECRET_KEY}
-      - AMQP_URL=amqp://rabbitmq:5672
+      - AMQP_URL=${AMQP_URL}
     depends_on:
-      - postgres_db
-      - redis_cache
-      - rabbitmq
+      postgres_db:
+        condition: service_healthy
+      redis_cache:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
     networks:
       - bknd_network
 
@@ -47,8 +50,12 @@ services:
       - .:/home/app:ro
       - /home/app/node_modules
     depends_on:
-      rabbitmq:
+      postgres_db:
         condition: service_healthy
+      redis_cache:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
     environment:
       - TZ=${TZ:-UTC}
       - AMQP_URL=${AMQP_URL}
@@ -83,9 +90,9 @@ services:
       - POSTGRES_DB=mydb
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d mydb"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 3s
+      retries: 3
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -112,9 +119,9 @@ services:
     container_name: redis_cache
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 3s
+      retries: 3
     volumes:
       - redis_data:/data
     ports:
@@ -178,24 +185,25 @@ services:
   #     - bknd_network
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: ts-ops-rabbitmq
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    hostname: rabbitmq-server
+    restart: unless-stopped
+    ports:
+      - "5672:5672" # AMQP protocol port
+      - "15672:15672" # Management UI port
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-      - RABBITMQ_ERLANG_COOKIE=super_secret_monolith_shared_cookie_123
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: SecurePassword123!
+      RABBITMQ_DEFAULT_VHOST: /
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    command: sh -c "chown rabbitmq:rabbitmq /var/lib/rabbitmq/.erlang.cookie &&  chmod 400 /var/lib/rabbitmq/.erlang.cookie && docker-entrypoint.sh rabbitmq-server"
+      - rabbitmq_logs:/var/log/rabbitmq
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
     networks:
       - bknd_network
 
@@ -209,4 +217,6 @@ volumes:
   redis_data:
     driver: local
   rabbitmq_data:
+    driver: local
+  rabbitmq_logs:
     driver: local

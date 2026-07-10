@@ -4,6 +4,5 @@ dist
 .env
 Dockerfile.dev
 
-logs/*log // this will ignore all log files in the logs directory
-logs 
+logs/*
 
