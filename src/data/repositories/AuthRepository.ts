@@ -17,18 +17,21 @@ export class AuthRepository extends BaseRepository {
     return result.rows[0] || null;
   }
 
-  async resetPassword(email: string, newPassword: string): Promise<IUser | null> {
+  async resetPassword(
+    email: string,
+    newPassword: string,
+  ): Promise<IUser | null> {
     const queryText = `
        UPDATE users
       SET password = $1
       WHERE email = $2
       RETURNING * 
-    `
+    `;
     const result = await this.pool.query(queryText, [newPassword, email]);
-    return result.rows[0] || null
+    return result.rows[0] || null;
   }
 
-  async verifyEmail(email: string, token:string) {
+  async verifyEmail(email: string, token: string) {
     const queryText = `
       UPDATE users 
       SET isVerified = true 

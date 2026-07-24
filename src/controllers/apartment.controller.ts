@@ -4,12 +4,12 @@ import { s3, bucketName } from "../config/aws-s3";
 import logger from "../utils/winston";
 import AppError from "../utils/appError";
 import { uploadToS3 } from "./upload.controller";
-import { getPaginationParameters } from "../utils/pagination";
+import { getCursorParameters } from "../utils/pagination";
 
 export const getAllApartments = async (req: Request, res: Response) => {
-  const { limit, offset } = getPaginationParameters(req);
-  const apartments = await ApartmentService.getAllApartments(limit, offset);
-  res.status(200).json({ apartments });
+  const query = getCursorParameters(req);
+  const result = await ApartmentService.getAllApartments(query);
+  res.status(200).json(result);
 };
 
 export const getApartmentById = async (req: Request, res: Response) => {

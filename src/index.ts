@@ -97,7 +97,7 @@ const startServer = async () => {
 
     app.use("/api/auth", authRoute);
     app.use("/api/user", authMiddleware, userRoute);
-    app.use("/api/users", [authMiddleware, roleMiddleware], getAllUsers);
+    app.use("/api/users", [authMiddleware, roleMiddleware("admin")], getAllUsers);
     app.use("/api", uploadRoute);
     app.use("/api/apartments", authMiddleware, apartmentRoute);
     app.use("/api/booking", authMiddleware, bookingRoute);

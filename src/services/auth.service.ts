@@ -14,7 +14,6 @@ import { generateEmailTemplate } from "../utils/emailTemplate";
 
 export class AuthService {
   private userRepo = new UserRepository(pgPool);
-  private authRepo = new AuthRepository(pgPool);
 
   async register(userData: IUser): Promise<IUser> {
     const existingUser = await this.userRepo.getUserByEmail(userData.email);
@@ -37,7 +36,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<IAuthResponse> {
-    const user = await UserService.getUserProfileByEmail(email);
+    const user = await this.userRepo.getUserByEmail(email);
     if (!user) {
       throw new Error("USER_NOT_FOUND");
     }

@@ -5,8 +5,10 @@ import { UserService } from "./user.service";
 import { ApartmentRepository } from "../data/repositories/ApartmentRepository";
 import {
   IApartment,
-  IApartmentQueryResult,
+  IApartmentQuery,
+  ICursorPage,
 } from "../data/repositories/repository";
+
 
 interface Apartment {
   agent_id: string;
@@ -95,10 +97,9 @@ export class ApartmentService {
   }
 
   static async getAllApartments(
-    limit: number,
-    offset: number,
-  ): Promise<IApartmentQueryResult> {
-    return this.apartmentRepo.getAllApartments({ limit, offset });
+    query: IApartmentQuery,
+  ): Promise<ICursorPage<IApartment>> {
+    return this.apartmentRepo.getAllApartments(query);
   }
 
   static async updateApartmentStatus(

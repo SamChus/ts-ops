@@ -2,7 +2,8 @@ import express from "express";
 import { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/user.service";
 import AppError from "../utils/appError";
-import { getPaginationParameters } from "../utils/pagination";
+import { getCursorParameters } from "../utils/pagination";
+
 
 export const getUserProfile = async (
   req: Request,
@@ -54,19 +55,16 @@ export const getAllUsers = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { page, perPage, limit, offset } = getPaginationParameters(req);
-  const {users, totalCount} = await UserService.getAllUsers(limit, offset);
-  const safeUsers = users.map(({ password, ...rest }) => rest);
-  res
-    .status(200)
-    .json({ 
-      message: "Users retrieved successfully", 
-      data: safeUsers,
-      pagination: {
-        page,
-        perPage,
-        total: totalCount,
-        totalPages: Math.ceil(totalCount / perPage),
-      }
-    });
+  const { limit, nextCursor, prevCursor } = getCursorParameters(req);
+  const page = await UserService.getAllUsers({ limit, nextCursor, prevCursor });
+
+  // Strip passwords from the data array just in case (UserRepository
+  // already excludes them at the SELECT level, but this is a safety net)
+  const safeData = page.data.map(({ password: _, ...rest }) => rest);
+
+  res.status(200).json({
+    message: "Users retrieved successfully",
+    data: safeData,
+    pagination: page.pagination,
+  });
 };

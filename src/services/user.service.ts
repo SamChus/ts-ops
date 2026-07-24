@@ -1,8 +1,13 @@
 import { pgPool, redisClient } from "../config/db";
 import { UserRepository } from "../data/repositories/UserRepository";
-import { IUser, IUserQuery, IUserQueryResult } from "../data/repositories/repository";
+import {
+  IUser,
+  IUserQuery,
+  ICursorPage,
+} from "../data/repositories/repository";
 import AppError from "../utils/appError";
 import logger from "../utils/winston";
+
 
 export class UserService {
   private static userRepo = new UserRepository(pgPool);
@@ -43,12 +48,9 @@ export class UserService {
     }
   }
 
-  static async getAllUsers(limit:number, offset:number): Promise<IUserQueryResult> {
+  static async getAllUsers(query: IUserQuery): Promise<ICursorPage<IUser>> {
     try {
-      return await this.userRepo.getAllUsers({
-        limit,
-        offset
-      });
+      return await this.userRepo.getAllUsers(query);
     } catch (ex) {
       logger.error(`Error fetching users: ${ex}`);
       throw new AppError("Failed to fetch users", 500);

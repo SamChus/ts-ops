@@ -3,10 +3,11 @@ import BaseRepository from "./BaseRepository";
 import {
   IApartment,
   IApartmentQuery,
-  IApartmentQueryResult,
+  ICursorPage,
   IApartmentRepository,
 } from "./repository";
 import AppError from "../../utils/appError";
+
 
 export class ApartmentRepository
   extends BaseRepository
@@ -148,29 +149,25 @@ export class ApartmentRepository
     await this.pool.query("DELETE FROM apartments WHERE id = $1", [id]);
   }
 
-  async getAllApartments(
-    query: IApartmentQuery,
-  ): Promise<IApartmentQueryResult> {
-    const limit = query.limit || this.defaultLimit;
-    const offset = query.offset || this.defaultOffset;
-
-    const dataQuery = `
-        SELECT * FROM apartments 
-        ORDER BY created_at DESC 
-        LIMIT $1 OFFSET $2;
-    `;
-    const countQuery = "SELECT COUNT(*) FROM apartments;";
-
-    const [dataRes, countRes] = await Promise.all([
-      this.pool.query(dataQuery, [limit, offset]),
-      this.pool.query(countQuery),
-    ]);
-
-    return {
-      apartment: dataRes.rows,
-      // PostgreSQL COUNT returns a string for bigint, so we parse it
-      totalCount: parseInt(countRes.rows[0].count, 10),
-    };
+  /**
+   * Cursor-paginated apartment listing.
+   *
+   * The cursor encodes the (created_at, id) of the last row seen,
+   * so Postgres can jump directly to that position using its index.
+   *
+   * GET /apartments?limit=10                         ← first page
+   * GET /apartments?limit=10&nextCursor=<token>      ← next page
+   * GET /apartments?limit=10&prevCursor=<token>      ← previous page
+   */
+  async getAllApartments(query: IApartmentQuery): Promise<ICursorPage<IApartment>> {
+    return this.paginateCursor<IApartment>({
+      table: "apartments",
+      sortCol: "created_at",
+      idCol: "id",
+      limit: query.limit,
+      nextCursor: query.nextCursor,
+      prevCursor: query.prevCursor,
+    });
   }
 
   async addImages(

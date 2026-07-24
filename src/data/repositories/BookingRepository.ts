@@ -125,7 +125,7 @@ export class BookingRepository
   async getBookingById(id: string): Promise<IBooking | null> {
     await redisClient.get(`booking:${id}`);
     const result = await this.pool.query(
-    "SELECT * FROM bookings WHERE id = $1 RETURNING id, apartment_id, guest_id, check_in, check_out, total_price, no_of_guest, status, expires_at",
+      "SELECT * FROM bookings WHERE id = $1 RETURNING id, apartment_id, guest_id, check_in, check_out, total_price, no_of_guest, status, expires_at",
       [id],
     );
     return result.rows[0] || null;

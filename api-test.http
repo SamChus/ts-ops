@@ -9,25 +9,25 @@ Content-Type: application/json
 
 {
   "name": "Samuel Chukwuma",
-  "email": "chus7672@gmail.com",
+  "email": "[EMAIL_ADDRESS]",
   "password": "test123",
   "phone": "08012345678",
   "role": "guest" 
 }
 
 ### 2. Login
-# @name login
 # This endpoint returns a token in the body and the 'X-Auth-Token' header
+# @name login
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "chus7672@gmail.com",
+  "email": "[EMAIL_ADDRESS]",
   "password": "test123"
 }
 
 ### Capture token from login response header or body
-@authToken = {{login.response.headers.X-Auth-Token}}
+@authToken = {{login.response.body.token}}
 
 ### 3. Forget Password
 POST {{baseUrl}}/auth/forget-password

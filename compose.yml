@@ -10,7 +10,6 @@ services:
       - .:/home/app
       - /home/app/node_modules
     environment:
-      - TZ=${TZ:-UTC}
       - NODE_ENV=${NODE_ENV}
       - PORT=${PORT}
       - DB_HOST=${DB_HOST}
@@ -57,7 +56,6 @@ services:
       rabbitmq:
         condition: service_started
     environment:
-      - TZ=${TZ:-UTC}
       - AMQP_URL=${AMQP_URL}
     networks:
       - bknd_network
@@ -83,7 +81,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - TZ=${TZ:-UTC}
       - PGTZ=${TZ:-UTC}
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
@@ -190,8 +187,8 @@ services:
     hostname: rabbitmq-server
     restart: unless-stopped
     ports:
-      - "5672:5672" # AMQP protocol port
-      - "15672:15672" # Management UI port
+      - "5672:5672" 
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: SecurePassword123!

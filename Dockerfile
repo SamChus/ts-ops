@@ -3,7 +3,9 @@ FROM node:22-alpine AS dependencies
 WORKDIR /home/app
 COPY package*.json tsconfig.json ./
 # Install ALL dependencies (including typescript) so we can compile the code
-RUN npm ci
+RUN npm config set registry http://registry.npmjs.org/ && \
+    npm config set strict-ssl false && \
+    npm ci
 
 FROM dependencies AS development
 
@@ -27,7 +29,9 @@ ENV NODE_ENV=production
 
 # Copy only production dependencies to keep the image lightweight
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm config set registry http://registry.npmjs.org/ && \
+    npm config set strict-ssl false && \
+    npm ci --only=production
 
 # Copy the compiled JS files from the build stage
 COPY --from=build /home/app/dist ./dist

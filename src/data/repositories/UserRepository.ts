@@ -3,9 +3,10 @@ import BaseRepository from "./BaseRepository";
 import {
   IUser,
   IUserRepository,
-  IUserQueryResult,
   IUserQuery,
+  ICursorPage,
 } from "./repository";
+
 
 export class UserRepository extends BaseRepository implements IUserRepository {
   constructor(pool: Pool) {
@@ -68,27 +69,31 @@ export class UserRepository extends BaseRepository implements IUserRepository {
     await this.pool.query("DELETE FROM users WHERE id = $1", [id]);
   }
 
-  async getAllUsers(query: IUserQuery): Promise<IUserQueryResult> {
-    const limit = query.limit || this.defaultLimit;
-    const offset = query.offset || this.defaultOffset;
-
-    const dataQuery = `
-      SELECT * FROM users 
-      ORDER BY created_at DESC 
-      LIMIT $1 OFFSET $2;
-    `;
-
-    const countQuery = "SELECT COUNT(*) FROM users;";
-
-    const [dataRes, countRes] = await Promise.all([
-      this.pool.query(dataQuery, [limit, offset]),
-      this.pool.query(countQuery),
-    ]);
-
-    return {
-      users: dataRes.rows,
-      totalCount: parseInt(countRes.rows[0].count, 10),
-    };
+  /**
+   * Cursor-paginated user list (keyset pagination).
+   *
+   * On the first call send no cursor:
+   *   getAllUsers({ limit: 10 })
+   *
+   * To go forward, pass the nextCursor from the last response:
+   *   getAllUsers({ limit: 10, nextCursor: page.pagination.nextCursor })
+   *
+   * To go backward, pass the prevCursor:
+   *   getAllUsers({ limit: 10, prevCursor: page.pagination.prevCursor })
+   *
+   * Passwords are excluded from the SELECT so they never leave the DB layer.
+   */
+  async getAllUsers(query: IUserQuery): Promise<ICursorPage<IUser>> {
+    return this.paginateCursor<IUser>({
+      table: "users",
+      sortCol: "created_at",
+      idCol: "id",
+      selectCols:
+        "id, name, email, role, phone, is_verified, profile_image_url, created_at, updated_at",
+      limit: query.limit,
+      nextCursor: query.nextCursor,
+      prevCursor: query.prevCursor,
+    });
   }
 
   async updateImage(userId: string, imageUrl: string): Promise<IUser | null> {
