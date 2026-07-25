@@ -12,7 +12,7 @@ export function getPaginationParameters(req: Request) {
     parseInt(req.query.perPage as string, 10) ||
     parseInt(req.query.limit as string, 10);
 
-  const validPage = isNaN(page) || page < 0 ? 1 : page;
+  const validPage = isNaN(page) || page <= 0 ? 1 : page;
   const validPerPage =
     isNaN(perPage) || perPage <= 0
       ? Number(process.env.DEFAULT_PER_PAGE) || 10

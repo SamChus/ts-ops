@@ -1,10 +1,7 @@
-import { pgPool, redisClient } from "../config/db";
-import { UserRepository } from "../data/repositories/UserRepository";
-import { AuthRepository } from "../data/repositories/AuthRepository";
-import { IAuthResponse, IUser } from "../data/repositories/repository";
+import { redisClient } from "../config/db";
+import { IAuthResponse, IUser, userRepo, authRepo } from "../data/repositories";
 import AppError from "../utils/appError";
 import logger from "../utils/winston";
-import { UserService } from "./user.service";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { getUserToken, verifyUserToken } from "../utils/signer";
@@ -13,10 +10,12 @@ import { sendEmail } from "./email.service";
 import { generateEmailTemplate } from "../utils/emailTemplate";
 
 export class AuthService {
-  private userRepo = new UserRepository(pgPool);
+  private static userRepo = userRepo;
+  private static authRepo = authRepo;
+
 
   async register(userData: IUser): Promise<IUser> {
-    const existingUser = await this.userRepo.getUserByEmail(userData.email);
+    const existingUser = await userRepo.getUserByEmail(userData.email);
     if (existingUser) {
        if (existingUser) throw new AppError("Email already registered", 400);
 
@@ -25,7 +24,7 @@ export class AuthService {
     try {
       const hashedPassword = await bcrypt.hash(userData.password, 10);
   
-      return await this.userRepo.createUser({
+      return await userRepo.createUser({
         ...userData,
         password: hashedPassword,
       });
@@ -36,7 +35,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<IAuthResponse> {
-    const user = await this.userRepo.getUserByEmail(email);
+    const user = await userRepo.getUserByEmail(email);
     if (!user) {
       throw new Error("USER_NOT_FOUND");
     }
@@ -72,7 +71,7 @@ export class AuthService {
     newPassword: string,
     token: string,
   ): Promise<void> {
-    const user = await this.userRepo.getUserByEmail(email);
+    const user = await userRepo.getUserByEmail(email);
     if (!user) {
       throw new Error("USER_NOT_FOUND");
     }
@@ -85,7 +84,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     try {
-      await this.userRepo.updateUser(user.id, { password: hashedPassword });
+      await userRepo.updateUser(user.id, { password: hashedPassword });
     } catch (ex) {
       logger.error(`Password reset error: ${ex}`);
       throw new AppError("Failed to reset password", 500);
@@ -126,7 +125,7 @@ export class AuthService {
       throw new Error("INVALID_TOKEN");
     }
     try {
-      await this.userRepo.updateUser(user.id, { is_verified: true });
+      await userRepo.updateUser(user.id, { is_verified: true });
       await redisClient.del(redisKey);
     } catch (ex) {
       logger.error("Email verification error", ex);

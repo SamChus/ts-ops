@@ -1,13 +1,12 @@
 import { pgPool, redisClient } from "../config/db";
-import { BookingRepository } from "../data/repositories/BookingRepository";
-import { IBooking, BookingRequest } from "../data/repositories/repository";
+import { BookingRepo, IBooking, BookingRequest } from "../data/repositories";
 import AppError from "../utils/appError";
 
 
 
 
 export class BookingService {
-    private static bookingRepo = new BookingRepository(pgPool)
+    private static bookingRepo = new BookingRepo(pgPool)
  
     static async createPendingBooking(request: BookingRequest) {
     

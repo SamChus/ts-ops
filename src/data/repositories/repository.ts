@@ -20,6 +20,18 @@ export interface ICursorPage<T> {
   };
 }
 
+export interface IOffsetPage<T> {
+  data: T[];
+  pagination: {
+    totalCount: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
 //Auth entity
 export interface IAuthResponse {
   user: IUser;
@@ -85,6 +97,7 @@ export interface IReview {
 export interface IQueryParameters {
   limit?: number | undefined;
   offset?: number | undefined;
+  page?: number | undefined;
   nextCursor?: string | undefined;
   prevCursor?: string | undefined;
 }
@@ -140,7 +153,7 @@ export interface IUserRepository {
   getUserByEmail(email: string): Promise<IUser | null>;
   updateUser(id: string, user: Partial<IUser>): Promise<IUser | null>;
   deleteUser(id: string): Promise<void>;
-  getAllUsers(query: IUserQuery): Promise<ICursorPage<IUser>>;
+  getAllUsers(query: IUserQuery): Promise<ICursorPage<IUser> | IOffsetPage<IUser>>;
 }
 
 export interface IApartmentRepository {

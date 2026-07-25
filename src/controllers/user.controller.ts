@@ -2,7 +2,7 @@ import express from "express";
 import { Request, Response, NextFunction } from "express";
 import { UserService } from "../services/user.service";
 import AppError from "../utils/appError";
-import { getCursorParameters } from "../utils/pagination";
+import { getCursorParameters, getPaginationParameters } from "../utils/pagination";
 
 
 export const getUserProfile = async (
@@ -55,8 +55,17 @@ export const getAllUsers = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { limit, nextCursor, prevCursor } = getCursorParameters(req);
-  const page = await UserService.getAllUsers({ limit, nextCursor, prevCursor });
+  let page;
+  const isOffsetRequest =
+    req.query.page !== undefined || req.query.offset !== undefined;
+
+  if (isOffsetRequest) {
+    const { limit, offset, page: pageNumber } = getPaginationParameters(req);
+    page = await UserService.getAllUsers({ limit, offset, page: pageNumber });
+  } else {
+    const { limit, nextCursor, prevCursor } = getCursorParameters(req);
+    page = await UserService.getAllUsers({ limit, nextCursor, prevCursor });
+  }
 
   // Strip passwords from the data array just in case (UserRepository
   // already excludes them at the SELECT level, but this is a safety net)

@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import type { ICursorPage } from "./repository";
+import type { ICursorPage, IOffsetPage } from "./repository";
 
 /**
  * Encodes a value (ISO timestamp or string ID) into a simple Base64 cursor string.
@@ -21,8 +21,8 @@ export function decodeCursor(token: string): string | null {
 }
 
 export default class BaseRepository {
-  protected readonly defaultLimit = 10;
-  protected pool: Pool;
+  public readonly defaultLimit = 10;
+  public pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
@@ -39,7 +39,7 @@ export default class BaseRepository {
    * 2. Runs: SELECT ... WHERE created_at < $cursor ORDER BY created_at DESC LIMIT limit + 1
    * 3. Uses the extra (limit + 1) item as a sentinel to build the nextCursor
    */
-  protected async paginateCursor<T extends object>(opts: {
+  public async paginateCursor<T extends object>(opts: {
     table: string;
     sortCol?: string | undefined;
     idCol?: string | undefined;
@@ -108,6 +108,79 @@ export default class BaseRepository {
         hasNextPage,
         hasPrevPage: !!nextCursor,
         limit,
+      },
+    };
+  }
+
+  /**
+   * Offset-based Pagination
+   */
+  public async paginateOffset<T extends object>(opts: {
+    table: string;
+    sortCol?: string | undefined;
+    selectCols?: string | undefined;
+    extraWhere?: string | undefined;
+    params?: unknown[] | undefined;
+    limit?: number | undefined;
+    offset?: number | undefined;
+    page?: number | undefined;
+  }): Promise<IOffsetPage<T>> {
+    const {
+      table,
+      sortCol = "created_at",
+      selectCols = "*",
+      extraWhere,
+      params = [],
+    } = opts;
+
+    const limit = Math.min(opts.limit ?? this.defaultLimit, 100);
+    const offset = opts.offset ?? 0;
+    const page = opts.page ?? 1;
+
+    const whereParts: string[] = [];
+
+    if (extraWhere) {
+      whereParts.push(extraWhere);
+    }
+
+    const whereClause =
+      whereParts.length > 0 ? `WHERE ${whereParts.join(" AND ")}` : "";
+
+    // 1. Get total count
+    const countSql = `
+      SELECT COUNT(*)::integer as count
+      FROM ${table}
+      ${whereClause}
+    `;
+    const countResult = await this.pool.query<{ count: number }>(countSql, params);
+    const totalCount = countResult.rows[0]?.count ?? 0;
+
+    // 2. Get paginated data
+    const bindParams = [...params, limit, offset];
+    const sql = `
+      SELECT ${selectCols}
+      FROM ${table}
+      ${whereClause}
+      ORDER BY ${sortCol} DESC
+      LIMIT $${bindParams.length - 1} OFFSET $${bindParams.length}
+    `;
+
+    const result = await this.pool.query<T>(sql, bindParams);
+    const rows = result.rows;
+
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = offset + limit < totalCount;
+    const hasPrevPage = offset > 0;
+
+    return {
+      data: rows,
+      pagination: {
+        totalCount,
+        page,
+        limit,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
       },
     };
   }

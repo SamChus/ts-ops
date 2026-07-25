@@ -1,16 +1,11 @@
 import { pgPool, redisClient } from "../config/db";
-import { UserRepository } from "../data/repositories/UserRepository";
-import {
-  IUser,
-  IUserQuery,
-  ICursorPage,
-} from "../data/repositories/repository";
+import { UserRepo, IUser, IUserQuery, ICursorPage, IOffsetPage } from "../data/repositories";
 import AppError from "../utils/appError";
 import logger from "../utils/winston";
 
 
 export class UserService {
-  private static userRepo = new UserRepository(pgPool);
+  private static userRepo = new UserRepo(pgPool);
 
   static async getUserProfileById(id: string): Promise<IUser | null> {
     try {
@@ -48,7 +43,9 @@ export class UserService {
     }
   }
 
-  static async getAllUsers(query: IUserQuery): Promise<ICursorPage<IUser>> {
+  static async getAllUsers(
+    query: IUserQuery,
+  ): Promise<ICursorPage<IUser> | IOffsetPage<IUser>> {
     try {
       return await this.userRepo.getAllUsers(query);
     } catch (ex) {

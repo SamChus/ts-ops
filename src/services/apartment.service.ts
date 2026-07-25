@@ -1,13 +1,8 @@
-import { pgPool } from "../config/db";
 import AppError from "../utils/appError";
 import logger from "../utils/winston";
 import { UserService } from "./user.service";
-import { ApartmentRepository } from "../data/repositories/ApartmentRepository";
-import {
-  IApartment,
-  IApartmentQuery,
-  ICursorPage,
-} from "../data/repositories/repository";
+import { IApartment, IApartmentQuery, ICursorPage } from "../data/repositories";
+import { apartmentRepo } from "../data/repositories";
 
 
 interface Apartment {
@@ -31,8 +26,7 @@ type ApartmentStatus =
   | "occupied";
 
 export class ApartmentService {
-  private static apartmentRepo = new ApartmentRepository(pgPool);
-
+  private static apartmentRepo = apartmentRepo;
   static async createApartment(data: Apartment): Promise<IApartment> {
     const user = await UserService.getUserProfileById(data.agent_id);
 
@@ -41,7 +35,7 @@ export class ApartmentService {
     }
 
     try {
-      return await this.apartmentRepo.createApartment(data as IApartment);
+      return await apartmentRepo.createApartment(data as IApartment);
     } catch (ex) {
       logger.error("Error creating apartment:", ex);
       throw new AppError("Failed to create apartment", 500);
