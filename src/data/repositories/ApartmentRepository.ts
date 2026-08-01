@@ -51,12 +51,17 @@ export function ApartmentRepository<TBase extends Constructor<BaseRepository>>(
           ]);
         }
 
+        console.log("availabilityRecords", availabilityRecords)
+
+        // Build value placeholders for the insert query (e.g., "($1, $2, $3, $4), ($5, $6, $7, $8), ...")
         const valuePlaceholders = availabilityRecords
           .map(
             (_, idx) =>
               `($${idx * 4 + 1}, $${idx * 4 + 2}, $${idx * 4 + 3}, $${idx * 4 + 4})`,
           )
           .join(", ");
+
+        console.log("valuePlaceholders", valuePlaceholders) 
 
         await client.query(
           `INSERT INTO apartment_availability (apartment_id, date, status, price_per_night)

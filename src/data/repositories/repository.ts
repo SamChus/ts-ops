@@ -140,7 +140,8 @@ export interface IBookingQueryResult {
 }
 
 export interface BookingRequest {
-  guest_id: number;
+  guest_id: string;
+  agent_id: string
   apartment_id: string;
   dates: string[];
   price_per_night: number;

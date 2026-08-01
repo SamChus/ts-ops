@@ -3,7 +3,7 @@ import { sendEmail } from "../../services/email.service";
 import { generateEmailTemplate } from "../../utils/emailTemplate";
 import { messageBroker } from "../messageBroker";
 
-export async function startEmailWorker() {
+export async function EmailWorker() {
   console.log("🤖 Starting Email Worker initialization...");
 
   const channel = await messageBroker.createChannel();

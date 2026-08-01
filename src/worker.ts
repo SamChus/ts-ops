@@ -1,15 +1,15 @@
-import { startEmailWorker } from "./queue/consumers/email.worker";
+import { EmailWorker } from "./queue/consumers/email.worker";
 import { initExpiryWorker } from "./queue/consumers/expiry.worker";
-import { startInventoryConsumer } from "./queue/consumers/inventory.consumer";
+import { InvoiceWorker } from "./queue/consumers/invoice.worker";
 import { amqpManager } from "./config/amqp";
 
 async function bootstrap(): Promise<void> {
   try {
     await amqpManager.connect();
     await Promise.all([
-      startEmailWorker(),
+      EmailWorker(),
       initExpiryWorker(),
-      startInventoryConsumer(),
+      InvoiceWorker(),
     ]);
     console.log("Worker started successfully");
   } catch (error) {

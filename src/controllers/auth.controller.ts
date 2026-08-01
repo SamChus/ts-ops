@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { validateLogin, validateRegister } from "../validate/auth";
+import { validateLogin, validateRegister } from "../schemas/auth";
 import { LoginRequest, RegisterRequest } from "../types";
 import { authService } from "../services/auth.service";
 import AppError from "../utils/appError";

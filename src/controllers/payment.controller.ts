@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import AppError from "../utils/appError";
 import paystackApi, {
@@ -11,9 +11,8 @@ import crypto from "crypto";
 import PaymentService from "../services/payment.service";
 
 export const initializePayment = async (req: Request, res: Response) => {
-  //destructure request
   const { email, name, amount, callbackUrl, bookingId } = req.body;
-  //validate user input/request
+
   if (!email || !name || !amount || !callbackUrl || !bookingId) {
     throw new AppError("All Fields Are Required", 400);
   }
@@ -30,20 +29,16 @@ export const initializePayment = async (req: Request, res: Response) => {
     },
   };
 
-  //call endpoint
   const result = await paystackApi.initializePayment(paymentData);
-  //response
   res.status(StatusCodes.OK).json(result);
 };
 
 export const verifyPayment = async (req: Request, res: Response) => {
-  //Get ref from query
   const { reference } = req.query;
 
   if (!reference) {
     throw new AppError("Refrence is missing", StatusCodes.BAD_REQUEST);
   }
-  //Call enpoint
 
   const response: VerifyPaymentResponse | null =
     await paystackApi.verifyPayment(reference as string);
@@ -52,7 +47,6 @@ export const verifyPayment = async (req: Request, res: Response) => {
     await PaymentService.saveVerifiedPayment(response);
   }
 
-  //response
   res.status(StatusCodes.OK).json(response);
 };
 
@@ -89,7 +83,6 @@ export const handlePaystackWebhook = async (
   res: Response,
 ): Promise<Response> => {
   try {
-    // 1. Get the signature from headers
     const hash = req.headers["x-paystack-signature"];
     const secret = process.env.PAYSTACK_SECRET_KEY || "YOUR_TEST_SECRET_KEY";
 
@@ -98,8 +91,7 @@ export const handlePaystackWebhook = async (
       return res.status(400).json({ error: "No signature provided" });
     }
 
-    // 2. Compute the HMAC signature using raw request body string
-    // Note: Make sure express.json() parser doesn't mutate the raw string body
+ 
 
     // Inside handlePaystackWebhook controller:
     const computedHash = crypto
@@ -131,28 +123,10 @@ export const handlePaystackWebhook = async (
         bookingId,
         reference: event.data.reference,
         timestamp: new Date().toISOString(),
+        data: { ...event.data }
       };
 
-      if (bookingId) {
-        await PaymentService.saveVerifiedPayment({
-          status: true,
-          message: "Charge success verified via webhook",
-          data: {
-            reference: event.data.reference,
-            amount: event.data.amount,
-            status: event.data.status,
-            metadata: {
-              bookingId,
-              email: event.data.customer?.email,
-              name: event.data.customer?.first_name,
-            },
-          },
-        });
-      }
-
-      // Push straight into RabbitMQ
       const channel = await amqpManager.createChannel();
-
       channel.sendToQueue(
         "payment_confirmed_queue",
         Buffer.from(JSON.stringify(payload)),
@@ -169,3 +143,5 @@ export const handlePaystackWebhook = async (
     return res.status(500).json({ error: "Internal webhook loop failure" });
   }
 };
+
+

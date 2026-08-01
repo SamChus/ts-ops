@@ -14,10 +14,7 @@ export const loginSchema = Joi.object({
     password: Joi.string().min(6).required(),
 })
 
-export const transferSchema = Joi.object({
-    receiverId: Joi.number().required(),
-    amount: Joi.number().min(0).required(),
-})
+
 
 export function validateRegister(data: any) {
     return registerSchema.validate(data)
@@ -27,6 +24,3 @@ export function validateLogin(data: any) {
     return loginSchema.validate(data)
 }
 
-export function validateTransfer(data: any) {
-    return transferSchema.validate(data)
-}

@@ -57,4 +57,5 @@ export interface PaymentConfirmedMessage {
   bookingId: string;
   reference: string;
   timestamp: string;
+  data: any;
 }

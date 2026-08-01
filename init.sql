@@ -1,6 +1,3 @@
--- Database initialization script for the application
--- Run this script to create the required tables
-
 -- Enable pgcrypto for UUID generation
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
@@ -48,6 +45,7 @@ CREATE TABLE IF NOT EXISTS apartments (
     address VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
     max_guests INT DEFAULT 1,
+    cleaning_fee NUMERIC(10, 2) DEFAULT 0.00,
     status VARCHAR(50) DEFAULT 'available',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -81,7 +79,25 @@ CREATE TABLE apartment_availability (
     CONSTRAINT unique_apartment_date UNIQUE (apartment_id, date) 
 );
 
-CREATE INDEX idx_apt_date ON apartment_availability(apartment_id, date);
+CREATE INDEX idx_apt_date ON apartment_availability(apartment_id, date); 
+
+
+CREATE TABLE IF NOT EXISTS invoices (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    invoice_number VARCHAR(100) UNIQUE NOT NULL,
+    booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+    guest_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    agent_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sub_total NUMERIC(10, 2) NOT NULL,
+    tax_amount NUMERIC(10, 2) NOT NULL,
+    total_amount NUMERIC(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'issued', -- pending, paid, refunded
+    pdf_url VARCHAR(512),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_invoice_booking ON invoices(booking_id);
+CREATE INDEX idx_invoice_guest ON invoices(guest_id);
 
 -- Reviews table
 CREATE TABLE IF NOT EXISTS reviews (
@@ -107,7 +123,7 @@ CREATE TABLE IF NOT EXISTS leaderboard (
 -- Notifications table
 CREATE TABLE IF NOT EXISTS notifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    guest_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     type VARCHAR(50) NOT NULL,
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
@@ -118,14 +134,17 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE TABLE IF NOT EXISTS payments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    invoice_id UUID NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
     booking_id UUID NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
     amount NUMERIC(10,2) NOT NULL,
     status VARCHAR(50) DEFAULT 'pending', -- pending, paid, refunded
-    method VARCHAR(50), -- card, transfer, wallet
     transaction_ref VARCHAR(255),
     paystack_data JSONB,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX idx_payment_gateway_ref ON payments(gateway_ref_id);
+CREATE INDEX idx_payment_booking ON payments(booking_id);
 
 
 CREATE TABLE IF NOT EXISTS booking_status_history (
